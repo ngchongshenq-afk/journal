@@ -663,9 +663,12 @@ function doBannerReview(key){
 
 
 function getReviews(){
-  try{return JSON.parse(localStorage.getItem('jrnl_reviews')||'[]');}catch(e){return[];}
+  return CLOUD['_reviews']||[];
 }
-function saveReviews(arr){localStorage.setItem('jrnl_reviews',JSON.stringify(arr));}
+function saveReviews(arr){
+  CLOUD['_reviews']=arr;
+  schedulePush();
+}
 
 let activeRevTab='today';
 let expandedRevs=new Set();
