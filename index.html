@@ -126,6 +126,7 @@ textarea:focus{outline:none;border-color:#1a1a1a;background:#fff}
 .rev-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0}
 .rev-expand-btn{font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:inherit}
 .rev-delete-btn{font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid #fecaca;background:#fff;color:#b91c1c;cursor:pointer;font-family:inherit}
+.rev-copy-btn{font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:inherit;margin-left:auto}
 .paste-area{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radius:10px;padding:10px 12px;background:#fafafa;color:#1a1a1a;resize:none;min-height:120px;font-family:inherit;line-height:1.5;-webkit-appearance:none;overflow:hidden;margin-bottom:8px}
 .paste-area:focus{outline:none;border-color:#1a1a1a;background:#fff}
 .rev-type-row{display:flex;gap:6px;margin-bottom:10px}
@@ -758,12 +759,24 @@ function renderSavedReviews(){
       <div class="${isExpanded?'rev-body':'rev-body-preview'}" id="revbody-${rev.id}">${rev.text}</div>
       <div class="rev-actions">
         <button class="rev-expand-btn" id="revexp-${rev.id}">${isExpanded?'Show less':'Read full'}</button>
+        <button class="rev-copy-btn" id="revcopy-${rev.id}">📋 Copy</button>
         <button class="rev-delete-btn" id="revdel-${rev.id}">Delete</button>
       </div>`;
     list.appendChild(card);
     document.getElementById('revexp-'+rev.id).addEventListener('click',()=>{
       if(expandedRevs.has(rev.id)){expandedRevs.delete(rev.id);}else{expandedRevs.add(rev.id);}
       renderSavedReviews();
+    });
+    document.getElementById('revcopy-'+rev.id).addEventListener('click',()=>{
+      navigator.clipboard.writeText(rev.text).then(()=>{
+        const b=document.getElementById('revcopy-'+rev.id);
+        b.textContent='✓ Copied';
+        setTimeout(()=>{b.textContent='📋 Copy';},2000);
+      }).catch(()=>{
+        const b=document.getElementById('revcopy-'+rev.id);
+        b.textContent='Failed';
+        setTimeout(()=>{b.textContent='📋 Copy';},2000);
+      });
     });
     document.getElementById('revdel-'+rev.id).addEventListener('click',()=>{
       if(!confirm('Delete this review?'))return;
