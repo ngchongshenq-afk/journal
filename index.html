@@ -111,6 +111,28 @@ textarea:focus{outline:none;border-color:#1a1a1a;background:#fff}
 .search-highlight{background:#fef9c3;border-radius:2px}
 .empty{text-align:center;color:#bbb;font-size:14px;padding:30px 0}
 .thinking{text-align:center;font-size:14px;color:#aaa;padding:24px 0}
+.rev-tabs{display:flex;gap:0;margin-bottom:14px;border:1px solid #e0e0e0;border-radius:12px;overflow:hidden}
+.rev-tab{flex:1;padding:9px;font-size:13px;font-family:inherit;border:none;background:#fff;color:#666;cursor:pointer;font-weight:500}
+.rev-tab.on{background:#1a1a1a;color:#fff}
+.rev-card{background:#fff;border:1px solid #e5e5e5;border-radius:14px;padding:14px;margin-bottom:12px}
+.rev-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.rev-card-date{font-size:12px;font-weight:600;color:#1a1a1a}
+.rev-card-type{font-size:10px;padding:2px 8px;border-radius:6px;font-weight:600;background:#f0f0f0;color:#666}
+.rev-card-type.today{background:#eff6ff;color:#1d4ed8}
+.rev-card-type.month{background:#f0fdf4;color:#15803d}
+.rev-card-type.alltime{background:#f5f3ff;color:#6d28d9}
+.rev-body{font-size:13px;color:#555;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.rev-body-preview{font-size:13px;color:#555;line-height:1.7;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.rev-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0}
+.rev-expand-btn{font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:inherit}
+.rev-delete-btn{font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid #fecaca;background:#fff;color:#b91c1c;cursor:pointer;font-family:inherit}
+.paste-area{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radius:10px;padding:10px 12px;background:#fafafa;color:#1a1a1a;resize:none;min-height:120px;font-family:inherit;line-height:1.5;-webkit-appearance:none;overflow:hidden;margin-bottom:8px}
+.paste-area:focus{outline:none;border-color:#1a1a1a;background:#fff}
+.rev-type-row{display:flex;gap:6px;margin-bottom:10px}
+.rtb{flex:1;padding:8px;border-radius:10px;border:1px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;text-align:center}
+.rtb.on{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.empty-rev{text-align:center;color:#bbb;font-size:14px;padding:30px 0;line-height:1.8}
+
 .month-banner{background:#fef9c3;border:1px solid #fbbf24;border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .month-banner-text{font-size:13px;color:#92400e;line-height:1.4;flex:1}
 .month-banner-title{font-weight:600;font-size:14px;color:#78350f;margin-bottom:2px}
@@ -127,6 +149,7 @@ textarea:focus{outline:none;border-color:#1a1a1a;background:#fff}
   <button class="tb" onclick="show('l')">Log</button>
   <button class="tb" onclick="show('c')">Close</button>
   <button class="tb" onclick="show('r')">Review</button>
+  <button class="tb" onclick="show('v')">Reviews</button>
   <button class="tb" onclick="show('h')">History</button>
 </div>
 <div id="pane"></div>
@@ -213,9 +236,9 @@ function autoResize(ta){ta.style.height='auto';ta.style.height=ta.scrollHeight+'
 function bindAllTA(){document.querySelectorAll('textarea').forEach(ta=>{autoResize(ta);ta.addEventListener('input',()=>autoResize(ta));});}
 
 function show(t){
-  document.querySelectorAll('.tb').forEach((b,i)=>{b.classList.toggle('on',['m','l','c','r','h'][i]===t);});
+  document.querySelectorAll('.tb').forEach((b,i)=>{b.classList.toggle('on',['m','l','c','r','v','h'][i]===t);});
   window.scrollTo(0,0);
-  if(t==='m')pM();else if(t==='l')pL();else if(t==='c')pC();else if(t==='r')pR();else pH();
+  if(t==='m')pM();else if(t==='l')pL();else if(t==='c')pC();else if(t==='r')pR();else if(t==='v')pV();else pH();
 }
 
 function pM(){
@@ -636,6 +659,115 @@ function doBannerReview(key){
   navigator.clipboard.writeText(prompt).then(()=>{
     setTimeout(()=>{window.open('https://claude.ai/new','_blank');},600);
   }).catch(()=>{alert('Could not copy — try the Review tab manually.');});
+}
+
+
+function getReviews(){
+  try{return JSON.parse(localStorage.getItem('jrnl_reviews')||'[]');}catch(e){return[];}
+}
+function saveReviews(arr){localStorage.setItem('jrnl_reviews',JSON.stringify(arr));}
+
+let activeRevTab='today';
+let expandedRevs=new Set();
+let revType='today';
+
+function pV(){
+  const p=document.getElementById('pane');
+  p.innerHTML=`
+  <div class="rev-tabs">
+    <button class="rev-tab on" id="rvt-saved" onclick="switchRevTab('saved')">Saved</button>
+    <button class="rev-tab" id="rvt-add" onclick="switchRevTab('add')">+ Add Review</button>
+  </div>
+  <div id="rev-saved-pane"></div>
+  <div id="rev-add-pane" style="display:none">
+    <div class="card">
+      <div class="lbl">Paste Claude's review</div>
+      <div class="rev-type-row">
+        <button class="rtb on" id="rt-today" onclick="setRevType('today',this)">Today</button>
+        <button class="rtb" id="rt-month" onclick="setRevType('month',this)">Month</button>
+        <button class="rtb" id="rt-alltime" onclick="setRevType('alltime',this)">All time</button>
+      </div>
+      <textarea class="paste-area" id="rev-paste" placeholder="Paste Claude's review here..." oninput="autoResize(this)"></textarea>
+      <button class="btn" id="rev-save-btn">Save review</button>
+      <div class="ok" id="rev-ok" style="opacity:0"></div>
+    </div>
+  </div>`;
+  document.getElementById('rev-save-btn').addEventListener('click',saveNewReview);
+  renderSavedReviews();
+}
+
+function switchRevTab(tab){
+  document.getElementById('rvt-saved').classList.toggle('on',tab==='saved');
+  document.getElementById('rvt-add').classList.toggle('on',tab==='add');
+  document.getElementById('rev-saved-pane').style.display=tab==='saved'?'':'none';
+  document.getElementById('rev-add-pane').style.display=tab==='add'?'':'none';
+  if(tab==='add'){
+    setTimeout(()=>{
+      const ta=document.getElementById('rev-paste');
+      if(ta){autoResize(ta);ta.addEventListener('input',()=>autoResize(ta));}
+    },50);
+  }
+}
+
+function setRevType(type,btn){
+  revType=type;
+  document.querySelectorAll('.rtb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function saveNewReview(){
+  const ta=document.getElementById('rev-paste');
+  if(!ta)return;
+  const text=ta.value.trim();
+  if(!text)return;
+  const reviews=getReviews();
+  reviews.unshift({
+    id:Date.now(),
+    date:new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}),
+    dateRaw:new Date().toISOString().slice(0,10),
+    type:revType,
+    text
+  });
+  saveReviews(reviews);
+  ta.value='';autoResize(ta);
+  fl('rev-ok');
+  setTimeout(()=>{switchRevTab('saved');renderSavedReviews();},1000);
+}
+
+function renderSavedReviews(){
+  const list=document.getElementById('rev-saved-pane');if(!list)return;
+  const reviews=getReviews();
+  if(!reviews.length){
+    list.innerHTML=`<div class="empty-rev">No reviews saved yet.<br>Do a review in the Review tab,<br>paste Claude's response here to save it.</div>`;
+    return;
+  }
+  list.innerHTML='';
+  const typeLabel={today:'Today',month:'Month',alltime:'All time'};
+  const typeClass={today:'today',month:'month',alltime:'alltime'};
+  reviews.forEach(rev=>{
+    const isExpanded=expandedRevs.has(rev.id);
+    const card=document.createElement('div');card.className='rev-card';
+    card.innerHTML=`
+      <div class="rev-card-header">
+        <span class="rev-card-date">${rev.date}</span>
+        <span class="rev-card-type ${typeClass[rev.type]||''}">${typeLabel[rev.type]||rev.type}</span>
+      </div>
+      <div class="${isExpanded?'rev-body':'rev-body-preview'}" id="revbody-${rev.id}">${rev.text}</div>
+      <div class="rev-actions">
+        <button class="rev-expand-btn" id="revexp-${rev.id}">${isExpanded?'Show less':'Read full'}</button>
+        <button class="rev-delete-btn" id="revdel-${rev.id}">Delete</button>
+      </div>`;
+    list.appendChild(card);
+    document.getElementById('revexp-'+rev.id).addEventListener('click',()=>{
+      if(expandedRevs.has(rev.id)){expandedRevs.delete(rev.id);}else{expandedRevs.add(rev.id);}
+      renderSavedReviews();
+    });
+    document.getElementById('revdel-'+rev.id).addEventListener('click',()=>{
+      if(!confirm('Delete this review?'))return;
+      const updated=getReviews().filter(r=>r.id!==rev.id);
+      saveReviews(updated);renderSavedReviews();
+    });
+  });
 }
 
 function doStreak(){
