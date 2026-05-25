@@ -144,7 +144,7 @@ textarea:focus{outline:none;border-color:#1a1a1a;background:#fff}
 </style>
 </head>
 <body>
-<div id="topbar"><span id="dlbl"></span><span id="slbl"></span></div>
+<div id="topbar"><span id="dlbl"></span><div style="display:flex;align-items:center;gap:8px"><span id="slbl"></span><button id="syncbtn" onclick="manualSync()" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:inherit">Sync</button></div></div>
 <div id="tabs">
   <button class="tb on" onclick="show('m')">Morning</button>
   <button class="tb" onclick="show('l')">Log</button>
@@ -784,6 +784,20 @@ function renderSavedReviews(){
       saveReviews(updated);renderSavedReviews();
     });
   });
+}
+
+
+async function manualSync(){
+  const btn=document.getElementById('syncbtn');
+  if(btn){btn.textContent='Syncing...';btn.disabled=true;}
+  try{
+    localStorage.setItem('jrnl_backup',JSON.stringify(CLOUD));
+    const r=await fetch(BIN_URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},body:JSON.stringify(CLOUD)});
+    if(!r.ok)throw new Error();
+    if(btn){btn.textContent='Synced ✓';setTimeout(()=>{btn.textContent='Sync';btn.disabled=false;},2000);}
+  }catch(e){
+    if(btn){btn.textContent='Failed';setTimeout(()=>{btn.textContent='Sync';btn.disabled=false;},2000);}
+  }
 }
 
 function doStreak(){
