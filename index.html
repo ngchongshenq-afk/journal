@@ -4,14 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Daily Journal</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh;padding-bottom:80px}
 #topbar{background:#fff;border-bottom:1px solid #e5e5e5;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
 #dlbl{font-size:13px;color:#666;font-weight:500}
-#slbl{font-size:11px;color:#999;background:#f0f0f0;padding:3px 10px;border-radius:20px}
+#topright{display:flex;align-items:center;gap:8px}
+#slbl{font-size:11px;color:#aaa}
+#syncbtn{font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:inherit}
 #tabs{background:#fff;border-bottom:1px solid #e5e5e5;padding:8px 16px;display:flex;gap:6px;overflow-x:auto;position:sticky;top:45px;z-index:9}
 #tabs::-webkit-scrollbar{display:none}
 .tb{flex-shrink:0;font-size:13px;padding:7px 16px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:inherit;white-space:nowrap}
@@ -45,13 +46,8 @@ textarea:focus{outline:none;border-color:#1a1a1a;background:#fff}
 .rsave{margin-top:5px;font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:inherit}
 .abtn{background:none;border:none;cursor:pointer;color:#ccc;font-size:17px;padding:2px 3px;line-height:1}
 .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600}
-.ti{background:#eff6ff;color:#1d4ed8}
-.tl{background:#f0fdf4;color:#15803d}
-.te{background:#fffbeb;color:#b45309}
-.td{background:#fef2f2;color:#b91c1c}
-.tr{background:#f5f3ff;color:#6d28d9}
-.tm{background:#fdf2f8;color:#9d174d}
-.tc{background:#fefce8;color:#92400e}
+.ti{background:#eff6ff;color:#1d4ed8}.tl{background:#f0fdf4;color:#15803d}.te{background:#fffbeb;color:#b45309}
+.td{background:#fef2f2;color:#b91c1c}.tr{background:#f5f3ff;color:#6d28d9}.tm{background:#fdf2f8;color:#9d174d}.tc{background:#fefce8;color:#92400e}
 .etrow{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
 .etag{font-size:11px;padding:4px 10px;border-radius:6px;font-weight:600;cursor:pointer;border:none;opacity:.35;font-family:inherit}
 .etag.on{opacity:1}
@@ -67,15 +63,39 @@ textarea:focus{outline:none;border-color:#1a1a1a;background:#fff}
 .ynb.sy{background:#f0fdf4;border-color:#86efac;color:#15803d}
 .ynb.sp{background:#fffbeb;border-color:#fde68a;color:#b45309}
 .ynb.sn{background:#fef2f2;border-color:#fca5a5;color:#b91c1c}
-/* Review tab */
 .review-option{background:#fff;border:1px solid #e5e5e5;border-radius:14px;padding:16px;margin-bottom:12px}
 .review-title{font-size:15px;font-weight:600;color:#1a1a1a;margin-bottom:4px}
 .review-desc{font-size:13px;color:#888;margin-bottom:14px;line-height:1.5}
-.review-btn{width:100%;padding:13px;border-radius:12px;background:#1a1a1a;color:#fff;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px}
-.review-btn:active{opacity:.8}
+.review-btn{width:100%;padding:13px;border-radius:12px;background:#1a1a1a;color:#fff;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
 .review-btn.copied{background:#15803d}
 .prompt-preview{background:#f8f8f8;border-radius:10px;padding:10px 12px;font-size:12px;color:#888;line-height:1.5;margin-top:10px;font-style:italic}
-/* History */
+.month-banner{background:#fef9c3;border:1px solid #fbbf24;border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.month-banner-text{font-size:13px;color:#92400e;line-height:1.4;flex:1}
+.month-banner-title{font-weight:600;font-size:14px;color:#78350f;margin-bottom:2px}
+.month-banner-btns{display:flex;gap:6px;flex-direction:column}
+.banner-review-btn{font-size:12px;padding:6px 12px;border-radius:8px;background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap}
+.banner-dismiss-btn{font-size:12px;padding:6px 12px;border-radius:8px;background:transparent;color:#92400e;border:1px solid #fbbf24;cursor:pointer;font-family:inherit;white-space:nowrap}
+.rev-tabs{display:flex;gap:0;margin-bottom:14px;border:1px solid #e0e0e0;border-radius:12px;overflow:hidden}
+.rev-tab{flex:1;padding:9px;font-size:13px;font-family:inherit;border:none;background:#fff;color:#666;cursor:pointer;font-weight:500}
+.rev-tab.on{background:#1a1a1a;color:#fff}
+.rev-card{background:#fff;border:1px solid #e5e5e5;border-radius:14px;padding:14px;margin-bottom:12px}
+.rev-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.rev-card-date{font-size:12px;font-weight:600;color:#1a1a1a}
+.rev-card-type{font-size:10px;padding:2px 8px;border-radius:6px;font-weight:600;background:#f0f0f0;color:#666}
+.rev-card-type.today{background:#eff6ff;color:#1d4ed8}
+.rev-card-type.month{background:#f0fdf4;color:#15803d}
+.rev-card-type.alltime{background:#f5f3ff;color:#6d28d9}
+.rev-body{font-size:13px;color:#555;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.rev-body-preview{font-size:13px;color:#555;line-height:1.7;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.rev-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0;align-items:center}
+.rev-expand-btn{font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:inherit}
+.rev-copy-btn{font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:inherit}
+.rev-delete-btn{font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid #fecaca;background:#fff;color:#b91c1c;cursor:pointer;font-family:inherit;margin-left:auto}
+.paste-area{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radius:10px;padding:10px 12px;background:#fafafa;color:#1a1a1a;resize:none;min-height:120px;font-family:inherit;line-height:1.5;-webkit-appearance:none;overflow:hidden;margin-bottom:8px}
+.paste-area:focus{outline:none;border-color:#1a1a1a;background:#fff}
+.rev-type-row{display:flex;gap:6px;margin-bottom:10px}
+.rtb{flex:1;padding:8px;border-radius:10px;border:1px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;text-align:center}
+.rtb.on{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
 .search-wrap{margin-bottom:10px;position:relative}
 .search-input{width:100%;font-size:14px;border:1px solid #e0e0e0;border-radius:12px;padding:10px 14px 10px 38px;background:#fff;color:#1a1a1a;font-family:inherit;-webkit-appearance:none;outline:none}
 .search-input:focus{border-color:#1a1a1a}
@@ -110,41 +130,18 @@ textarea:focus{outline:none;border-color:#1a1a1a;background:#fff}
 .day-detail{padding:12px 14px;border-top:1px solid #f0f0f0;background:#fafafa}
 .search-highlight{background:#fef9c3;border-radius:2px}
 .empty{text-align:center;color:#bbb;font-size:14px;padding:30px 0}
-.thinking{text-align:center;font-size:14px;color:#aaa;padding:24px 0}
-.rev-tabs{display:flex;gap:0;margin-bottom:14px;border:1px solid #e0e0e0;border-radius:12px;overflow:hidden}
-.rev-tab{flex:1;padding:9px;font-size:13px;font-family:inherit;border:none;background:#fff;color:#666;cursor:pointer;font-weight:500}
-.rev-tab.on{background:#1a1a1a;color:#fff}
-.rev-card{background:#fff;border:1px solid #e5e5e5;border-radius:14px;padding:14px;margin-bottom:12px}
-.rev-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.rev-card-date{font-size:12px;font-weight:600;color:#1a1a1a}
-.rev-card-type{font-size:10px;padding:2px 8px;border-radius:6px;font-weight:600;background:#f0f0f0;color:#666}
-.rev-card-type.today{background:#eff6ff;color:#1d4ed8}
-.rev-card-type.month{background:#f0fdf4;color:#15803d}
-.rev-card-type.alltime{background:#f5f3ff;color:#6d28d9}
-.rev-body{font-size:13px;color:#555;line-height:1.7;white-space:pre-wrap;word-break:break-word}
-.rev-body-preview{font-size:13px;color:#555;line-height:1.7;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.rev-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0}
-.rev-expand-btn{font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:inherit}
-.rev-delete-btn{font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid #fecaca;background:#fff;color:#b91c1c;cursor:pointer;font-family:inherit}
-.rev-copy-btn{font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:inherit;margin-left:auto}
-.paste-area{width:100%;font-size:13px;border:1px solid #e0e0e0;border-radius:10px;padding:10px 12px;background:#fafafa;color:#1a1a1a;resize:none;min-height:120px;font-family:inherit;line-height:1.5;-webkit-appearance:none;overflow:hidden;margin-bottom:8px}
-.paste-area:focus{outline:none;border-color:#1a1a1a;background:#fff}
-.rev-type-row{display:flex;gap:6px;margin-bottom:10px}
-.rtb{flex:1;padding:8px;border-radius:10px;border:1px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;text-align:center}
-.rtb.on{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
 .empty-rev{text-align:center;color:#bbb;font-size:14px;padding:30px 0;line-height:1.8}
-
-.month-banner{background:#fef9c3;border:1px solid #fbbf24;border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
-.month-banner-text{font-size:13px;color:#92400e;line-height:1.4;flex:1}
-.month-banner-title{font-weight:600;font-size:14px;color:#78350f;margin-bottom:2px}
-.month-banner-btns{display:flex;gap:6px;flex-direction:column}
-.banner-review-btn{font-size:12px;padding:6px 12px;border-radius:8px;background:#1a1a1a;color:#fff;border:none;cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap}
-.banner-dismiss-btn{font-size:12px;padding:6px 12px;border-radius:8px;background:transparent;color:#92400e;border:1px solid #fbbf24;cursor:pointer;font-family:inherit;white-space:nowrap}
-
+.thinking{text-align:center;font-size:14px;color:#aaa;padding:24px 0}
 </style>
 </head>
 <body>
-<div id="topbar"><span id="dlbl"></span><div style="display:flex;align-items:center;gap:8px"><span id="slbl"></span><button id="syncbtn" onclick="manualSync()" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:inherit">Sync</button></div></div>
+<div id="topbar">
+  <span id="dlbl"></span>
+  <div id="topright">
+    <span id="slbl"></span>
+    <button id="syncbtn" onclick="manualSync()">Sync</button>
+  </div>
+</div>
 <div id="tabs">
   <button class="tb on" onclick="show('m')">Morning</button>
   <button class="tb" onclick="show('l')">Log</button>
@@ -156,9 +153,8 @@ textarea:focus{outline:none;border-color:#1a1a1a;background:#fff}
 <div id="pane"></div>
 
 <script>
-const API_KEY='$2a$10$H83vWV9NrrAnZ.ZqoNCZ2O7ye1YULBazFSKiBLjC8UmvhsoLId3cO';
-const BIN_ID='6a12954f6610dd3ae897b10e';
-const BIN_URL='https://api.jsonbin.io/v3/b/'+BIN_ID;
+const SB_URL='https://bgdocmemcjmmtrivqmju.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJnZG9jbWVtY2ptbXRyaXZxbWp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MTUxNjIsImV4cCI6MjA5NTI5MTE2Mn0.e999riyEm3ht9GRycU6ObuVXLfePAtcKyRFsx_Q2GpQ';
 const CLAUDE_URL='https://claude.ai/new';
 
 const TL={insight:'Insight',leadership:'Leadership',energy:'Energy',decision:'Decision',relationship:'Relationship',mindset:'Mindset',culture:'Culture'};
@@ -176,7 +172,7 @@ const KW={
   relationship:['friend','family','partner','colleague','disappoint','two-tim','cheat','loyal','hurt','let down','argument','care about','close to'],
   leadership:['cadet','officer','train','course','lead','team','command','instruct','mentor','influence','brief','platoon','conduct','showed up','spoke up','stepped up'],
   culture:['workplace','culture','posted','new posting','way things work','fitting in','still learning','adjustment','not used to','finding my feet'],
-  energy:['tired','exhaust','drain','energis','motivat','stress','anxious','calm','restless','burnt out','switched off','recharg','fun','enjoying','playing','game','relax','wound up','pumped'],
+  energy:['tired','exhaust','drain','energis','motivat','stress','anxious','calm','restless','burnt out','switched off','recharg','fun','enjoying','playing','game','relax','wound up','pumped','vib'],
   decision:['decided','choosing','choice','option','weighing','going with','picked','committed','should i','do i','considering','trade off'],
   mindset:['believe','telling myself','self-doubt','confidence','pattern','realised about','always do this','comparing','imposter','not good enough']
 };
@@ -188,52 +184,97 @@ function autoTag(t){
   return best;
 }
 
-let sv=0,yv='',eid=null,activeFilter='all';
-let CLOUD={};let saveTimer=null;
-
-function syncLbl(msg){
-  const el=document.getElementById('slbl');
-  if(el)el.textContent=msg;
-}
-
-async function loadCloud(){
-  try{
-    syncLbl('Syncing...');
-    const r=await fetch(BIN_URL+'/latest',{headers:{'X-Master-Key':API_KEY}});
-    if(!r.ok)throw new Error();
-    const js=await r.json();
-    CLOUD=js.record||{};
-    syncLbl('');
-  }catch(e){
-    syncLbl('Offline');
-    const local=localStorage.getItem('jrnl_backup');
-    if(local)try{CLOUD=JSON.parse(local);}catch(e2){}
-  }
-}
-
-async function pushCloud(){
-  try{
-    localStorage.setItem('jrnl_backup',JSON.stringify(CLOUD));
-    await fetch(BIN_URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},body:JSON.stringify(CLOUD)});
-    syncLbl('');
-  }catch(e){syncLbl('Offline');}
-}
-
-function schedulePush(){
-  if(saveTimer)clearTimeout(saveTimer);
-  saveTimer=setTimeout(pushCloud,1200);
-}
+let sv=0,yv='',eid=null,activeFilter='all',revType='today';
+let CACHE={};
+let saveTimer=null;
+let expandedRevs=new Set();
 
 function dk(){const d=new Date();return'j-'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function dtStr(){return new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});}
 function nowT(){return new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
-function gd(){return CLOUD[dk()]||{m:{},log:[],c:{},sum:''};}
-function sd(d){CLOUD[dk()]=d;schedulePush();}
+
+function sbHeaders(){return{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':'resolution=merge-duplicates'};}
+
+async function sbGet(id){
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/journal?id=eq.'+encodeURIComponent(id)+'&select=data',{headers:sbHeaders()});
+    const js=await r.json();
+    return js&&js.length?js[0].data:null;
+  }catch(e){return null;}
+}
+
+async function sbSet(id,data){
+  try{
+    await fetch(SB_URL+'/rest/v1/journal',{
+      method:'POST',
+      headers:{...sbHeaders(),'Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({id,data,updated_at:new Date().toISOString()})
+    });
+  }catch(e){console.warn('sync failed',e);}
+}
+
+async function sbGetAll(){
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/journal?select=id,data',{headers:sbHeaders()});
+    return await r.json();
+  }catch(e){return[];}
+}
+
+function syncLbl(msg){const el=document.getElementById('slbl');if(el)el.textContent=msg;}
+
+async function gd(){
+  const key=dk();
+  if(CACHE[key])return CACHE[key];
+  syncLbl('Loading...');
+  const data=await sbGet(key);
+  const d=data||{m:{},log:[],c:{},sum:''};
+  CACHE[key]=d;
+  syncLbl('');
+  return d;
+}
+
+async function sd(d){
+  const key=dk();
+  CACHE[key]=d;
+  // save to localStorage immediately as backup
+  try{localStorage.setItem('backup_'+key,JSON.stringify(d));}catch(e){}
+  // debounce push to Supabase
+  if(saveTimer)clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{
+    syncLbl('Saving...');
+    await sbSet(key,d);
+    syncLbl('');
+  },800);
+}
+
+async function manualSync(){
+  const btn=document.getElementById('syncbtn');
+  if(btn){btn.textContent='Syncing...';btn.disabled=true;}
+  try{
+    // Push all cached data
+    for(const[key,data]of Object.entries(CACHE)){
+      await sbSet(key,data);
+    }
+    // Also push any localStorage backups
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(k&&k.startsWith('backup_j-')){
+        const id=k.replace('backup_','');
+        if(!CACHE[id]){
+          try{const d=JSON.parse(localStorage.getItem(k));await sbSet(id,d);}catch(e){}
+        }
+      }
+    }
+    if(btn){btn.textContent='Synced ✓';setTimeout(()=>{btn.textContent='Sync';btn.disabled=false;},2000);}
+  }catch(e){
+    if(btn){btn.textContent='Failed';setTimeout(()=>{btn.textContent='Sync';btn.disabled=false;},2000);}
+  }
+}
+
 function fl(id){const e=document.getElementById(id);if(!e)return;e.textContent='Saved ✓';e.style.opacity='1';setTimeout(()=>e.style.opacity='0',2000);}
 function gv(id){const e=document.getElementById(id);return e?e.value:'';}
-
-function autoResize(ta){ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';}
+function autoResize(ta){if(!ta)return;ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';}
 function bindAllTA(){document.querySelectorAll('textarea').forEach(ta=>{autoResize(ta);ta.addEventListener('input',()=>autoResize(ta));});}
 
 function show(t){
@@ -255,12 +296,11 @@ function pM(){
   </div>
   <button class="btn" id="msave">Save morning</button>
   <div class="ok" id="mok" style="opacity:0"></div>`;
-  document.getElementById('msave').addEventListener('click',()=>{
-    const d=gd();d.m={m1:gv('m1'),m2:gv('m2'),m3:gv('m3'),m4:gv('m4'),m5:gv('m5')};
-    sd(d);fl('mok');doStreak();
+  document.getElementById('msave').addEventListener('click',async()=>{
+    const d=await gd();d.m={m1:gv('m1'),m2:gv('m2'),m3:gv('m3'),m4:gv('m4'),m5:gv('m5')};
+    await sd(d);fl('mok');doStreak();
   });
-  const d=gd();const m=d.m||{};['m1','m2','m3','m4','m5'].forEach(i=>{const e=document.getElementById(i);if(e&&m[i])e.value=m[i];});
-  setTimeout(bindAllTA,50);
+  gd().then(d=>{const m=d.m||{};['m1','m2','m3','m4','m5'].forEach(i=>{const e=document.getElementById(i);if(e&&m[i])e.value=m[i];});setTimeout(bindAllTA,50);});
   checkMonthBanner();
 }
 
@@ -281,19 +321,19 @@ function pL(){
   renderLog();
 }
 
-function doAdd(){
+async function doAdd(){
   const ta=document.getElementById('si');const st=document.getElementById('stxt');
   if(!ta)return;const txt=ta.value.trim();if(!txt)return;
-  const t=autoTag(txt);const d=gd();
+  const t=autoTag(txt);const d=await gd();
   if(!Array.isArray(d.log))d.log=[];
   d.log.push({id:Date.now(),time:nowT(),tag:t,text:txt,reply:''});
-  sd(d);ta.value='';autoResize(ta);
+  await sd(d);ta.value='';autoResize(ta);
   if(st){st.textContent='Added as '+TL[t];setTimeout(()=>{if(st)st.textContent='';},2500);}
   renderLog();doStreak();
 }
 
-function renderLog(){
-  const d=gd();const ll=document.getElementById('ll');if(!ll)return;
+async function renderLog(){
+  const d=await gd();const ll=document.getElementById('ll');if(!ll)return;
   if(!d.log||!d.log.length){ll.innerHTML='<div class="empty">Nothing yet — type above</div>';return;}
   ll.innerHTML='';
   [...d.log].reverse().forEach(item=>{
@@ -306,10 +346,10 @@ function renderLog(){
       ll.appendChild(div);
       let et=item.tag;
       div.querySelectorAll('.etag').forEach(b=>{b.addEventListener('click',()=>{et=b.dataset.t;div.querySelectorAll('.etag').forEach(x=>x.classList.toggle('on',x.dataset.t===et));});});
-      document.getElementById('es-'+item.id).addEventListener('click',()=>{
+      document.getElementById('es-'+item.id).addEventListener('click',async()=>{
         const nt=document.getElementById('et-'+item.id).value.trim();if(!nt)return;
-        const d2=gd();const it=d2.log.find(x=>x.id===item.id);
-        if(it){it.text=nt;it.tag=et;}sd(d2);eid=null;renderLog();
+        const d2=await gd();const it=d2.log.find(x=>x.id===item.id);
+        if(it){it.text=nt;it.tag=et;}await sd(d2);eid=null;renderLog();
       });
       document.getElementById('ec-'+item.id).addEventListener('click',()=>{eid=null;renderLog();});
       const eta=document.getElementById('et-'+item.id);if(eta){eta.focus();autoResize(eta);eta.addEventListener('input',()=>autoResize(eta));}
@@ -329,10 +369,10 @@ function renderLog(){
         <button class="rsave" id="rs-${item.id}">Save reflection</button>`;
       ll.appendChild(div);
       document.getElementById('eb-'+item.id).addEventListener('click',()=>{eid=item.id;renderLog();});
-      document.getElementById('db-'+item.id).addEventListener('click',()=>{const d2=gd();d2.log=d2.log.filter(x=>x.id!==item.id);sd(d2);eid=null;renderLog();});
-      document.getElementById('rs-'+item.id).addEventListener('click',()=>{
+      document.getElementById('db-'+item.id).addEventListener('click',async()=>{const d2=await gd();d2.log=d2.log.filter(x=>x.id!==item.id);await sd(d2);eid=null;renderLog();});
+      document.getElementById('rs-'+item.id).addEventListener('click',async()=>{
         const ta=document.getElementById('r-'+item.id);if(!ta)return;
-        const d2=gd();const it=d2.log.find(x=>x.id===item.id);if(it){it.reply=ta.value;sd(d2);}
+        const d2=await gd();const it=d2.log.find(x=>x.id===item.id);if(it){it.reply=ta.value;await sd(d2);}
       });
       div.querySelectorAll('.chip').forEach(b=>{b.addEventListener('click',()=>{
         const ta=document.getElementById('r-'+item.id);
@@ -360,12 +400,13 @@ function pC(){
   document.getElementById('yy').addEventListener('click',()=>setY('y'));
   document.getElementById('yp').addEventListener('click',()=>setY('p'));
   document.getElementById('yn').addEventListener('click',()=>setY('n'));
-  document.getElementById('csave').addEventListener('click',()=>{
-    const d=gd();d.c={c1:gv('c1'),c2:gv('c2'),c3:gv('c3'),star:sv,yn:yv};sd(d);fl('cok');
+  document.getElementById('csave').addEventListener('click',async()=>{
+    const d=await gd();d.c={c1:gv('c1'),c2:gv('c2'),c3:gv('c3'),star:sv,yn:yv};await sd(d);fl('cok');
   });
-  const d=gd();const c=d.c||{};['c1','c2','c3'].forEach(i=>{const e=document.getElementById(i);if(e&&c[i])e.value=c[i];});
-  if(c.star){sv=c.star;bldStars();}if(c.yn)setY(c.yn);
-  setTimeout(bindAllTA,50);
+  gd().then(d=>{
+    const c=d.c||{};['c1','c2','c3'].forEach(i=>{const e=document.getElementById(i);if(e&&c[i])e.value=c[i];});
+    if(c.star){sv=c.star;bldStars();}if(c.yn)setY(c.yn);setTimeout(bindAllTA,50);
+  });
 }
 function bldStars(){
   const c=document.getElementById('stars');if(!c)return;c.innerHTML='';
@@ -373,19 +414,20 @@ function bldStars(){
 }
 function setY(v){yv=v;['y','p','n'].forEach(k=>{const b=document.getElementById('y'+k);if(b)b.className='ynb'+(k===v?' s'+v:'');});}
 
-function buildExport(days){
+async function buildExport(days){
   const tod=today();
-  const keys=Object.keys(CLOUD).filter(k=>k.startsWith('j-')).sort().reverse();
-  let filtered=keys;
-  if(days===1){filtered=keys.filter(k=>k.replace('j-','')===tod);}
+  const rows=await sbGetAll();
+  let keys=rows.map(r=>r.id).filter(k=>k.startsWith('j-')).sort().reverse();
+  if(days===1){keys=keys.filter(k=>k.replace('j-','')===tod);}
   else if(days>1){
     const cutoff=new Date();cutoff.setDate(cutoff.getDate()-days);
-    filtered=keys.filter(k=>new Date(k.replace('j-','')+'T12:00:00')>=cutoff);
+    keys=keys.filter(k=>new Date(k.replace('j-','')+'T12:00:00')>=cutoff);
   }
-  if(!filtered.length)return null;
+  if(!keys.length)return null;
   let out='JOURNAL ENTRIES\n===============\n\n';
-  [...filtered].reverse().forEach(k=>{
-    const v=CLOUD[k];if(!v)return;
+  const dataMap={};rows.forEach(r=>{dataMap[r.id]=r.data;});
+  [...keys].reverse().forEach(k=>{
+    const v=dataMap[k];if(!v)return;
     const ds=k.replace('j-','');
     const lbl=new Date(ds+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
     const has=(v.log&&v.log.length)||(Object.values(v.m||{}).some(Boolean))||(v.c?.c1||v.c?.c2||v.c?.c3);
@@ -403,236 +445,56 @@ function buildExport(days){
   return out;
 }
 
-function doReview(days,label,btnId){
+async function doReview(days,btnId,extraPrompt){
   const btn=document.getElementById(btnId);
-  const data=buildExport(days);
-  if(!data){if(btn){btn.textContent='No entries found';setTimeout(()=>{btn.textContent='Copy & Open Claude';btn.classList.remove('copied');},2000);}return;}
-  const prompt=data+'\n===============\nReview my journal entries above. Give me:\n1. Key patterns and themes\n2. Leadership moments and how I showed up\n3. Energy arc through the period\n4. Positive behaviours to reinforce\n5. Honest watch-outs or behaviours to address\n6. What to focus on going forward\n\nBe direct, specific, and honest. Reference actual entries.';
+  if(btn){btn.textContent='Preparing...';btn.disabled=true;}
+  const data=await buildExport(days);
+  if(!data){
+    if(btn){btn.textContent='No entries found';setTimeout(()=>{btn.textContent='Copy & Open Claude';btn.disabled=false;},2000);}
+    return;
+  }
+  const prompt=data+'\n===============\n'+extraPrompt;
   navigator.clipboard.writeText(prompt).then(()=>{
-    if(btn){btn.innerHTML='✓ Copied — opening Claude...';btn.classList.add('copied');}
+    if(btn){btn.classList.add('copied');btn.textContent='✓ Copied — opening Claude...';}
     setTimeout(()=>{window.open(CLAUDE_URL,'_blank');},600);
-    setTimeout(()=>{if(btn){btn.innerHTML='Copy & Open Claude';btn.classList.remove('copied');}},3000);
-  }).catch(()=>{
-    if(btn){btn.textContent='Copy failed — try again';}
-  });
+    setTimeout(()=>{if(btn){btn.classList.remove('copied');btn.textContent='Copy & Open Claude';btn.disabled=false;}},3000);
+  }).catch(()=>{if(btn){btn.textContent='Copy failed';btn.disabled=false;}});
 }
 
 function pR(){
   document.getElementById('pane').innerHTML=`
-  <p style="font-size:13px;color:#888;margin-bottom:14px;line-height:1.6">Tap a button below to copy your entries and open Claude. Just paste and Claude will give you a full review.</p>
-
+  <p style="font-size:13px;color:#888;margin-bottom:14px;line-height:1.6">Tap a button below to copy your entries and open Claude. Paste when Claude opens.</p>
   <div class="review-option">
     <div class="review-title">Today's review</div>
     <div class="review-desc">End of day reflection — patterns, what went well, what to watch, carry forward.</div>
-    <button class="review-btn" id="rb-today" onclick="doReview(1,'today','rb-today')">Copy & Open Claude</button>
-    <div class="prompt-preview">"Review my entries for today. Give me patterns, leadership moments, positive behaviours to reinforce, watch-outs, and what to carry forward."</div>
+    <button class="review-btn" id="rb-today" onclick="doReview(1,'rb-today','Review my journal entries for today. Give me:\\n1. Key patterns and themes\\n2. Leadership moments\\n3. Energy arc\\n4. Positive behaviours to reinforce\\n5. Honest watch-outs\\n6. What to carry forward\\nBe direct, specific, honest.')">Copy & Open Claude</button>
+    <div class="prompt-preview">"Review my entries for today — patterns, leadership moments, energy arc, positives, watch-outs, carry forward."</div>
   </div>
-
   <div class="review-option">
     <div class="review-title">This month's review</div>
-    <div class="review-desc">Monthly highlights — growth arc, recurring themes, leadership development over the month.</div>
-    <button class="review-btn" id="rb-month" onclick="doReview(30,'month','rb-month')">Copy & Open Claude</button>
-    <div class="prompt-preview">"Review my journal entries for the past 30 days. Summarise my growth arc, recurring patterns, leadership development, and what to focus on next month."</div>
+    <div class="review-desc">Monthly highlights — growth arc, recurring themes, leadership development.</div>
+    <button class="review-btn" id="rb-month" onclick="doReview(30,'rb-month','Review my journal entries for the past 30 days. Give me:\\n1. Monthly growth arc\\n2. Recurring patterns and themes\\n3. Leadership development\\n4. Positive behaviours to reinforce\\n5. Honest watch-outs and blind spots\\n6. What to focus on next month\\nBe direct, specific, honest.')">Copy & Open Claude</button>
+    <div class="prompt-preview">"Review my past 30 days — growth arc, recurring patterns, leadership development, what to focus on next month."</div>
   </div>
-
   <div class="review-option">
     <div class="review-title">All time review</div>
-    <div class="review-desc">Full picture — long term patterns, how you've grown, what consistently shows up.</div>
-    <button class="review-btn" id="rb-all" onclick="doReview(0,'all','rb-all')">Copy & Open Claude</button>
-    <div class="prompt-preview">"Review all my journal entries. Give me a big picture summary — long term patterns, growth over time, consistent strengths and blind spots."</div>
+    <div class="review-desc">Full picture — long term patterns, growth over time, consistent strengths and blind spots.</div>
+    <button class="review-btn" id="rb-all" onclick="doReview(0,'rb-all','Review all my journal entries. Give me:\\n1. Long term patterns and recurring themes\\n2. How I have grown over time\\n3. Consistent strengths to lean into\\n4. Persistent blind spots to address\\n5. What to focus on going forward\\nBe direct, specific, honest.')">Copy & Open Claude</button>
+    <div class="prompt-preview">"Review all my entries — long term patterns, growth over time, consistent strengths and blind spots."</div>
   </div>`;
 }
 
-function pH(){
-  const p=document.getElementById('pane');
-  p.innerHTML=`
-  <div class="hist-tabs">
-    <button class="hist-tab on" id="ht-browse" onclick="switchHistTab('browse')">Browse</button>
-    <button class="hist-tab" id="ht-tree" onclick="switchHistTab('tree')">By Date</button>
-  </div>
-  <div id="browse-pane">
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input class="search-input" id="kw-search" placeholder="Search entries..." oninput="renderHistory()">
-    </div>
-    <div class="filter-row">
-      <button class="fb on" onclick="setFilter('all',this)">All</button>
-      <button class="fb" onclick="setFilter('insight',this)" style="background:#eff6ff;color:#1d4ed8;border-color:#dbeafe">Insight</button>
-      <button class="fb" onclick="setFilter('leadership',this)" style="background:#f0fdf4;color:#15803d;border-color:#bbf7d0">Leadership</button>
-      <button class="fb" onclick="setFilter('energy',this)" style="background:#fffbeb;color:#b45309;border-color:#fde68a">Energy</button>
-      <button class="fb" onclick="setFilter('decision',this)" style="background:#fef2f2;color:#b91c1c;border-color:#fecaca">Decision</button>
-      <button class="fb" onclick="setFilter('relationship',this)" style="background:#f5f3ff;color:#6d28d9;border-color:#ddd6fe">Relationship</button>
-      <button class="fb" onclick="setFilter('mindset',this)" style="background:#fdf2f8;color:#9d174d;border-color:#fbcfe8">Mindset</button>
-      <button class="fb" onclick="setFilter('culture',this)" style="background:#fefce8;color:#92400e;border-color:#fef08a">Culture</button>
-    </div>
-    <div id="hist-list"></div>
-  </div>
-  <div id="tree-pane" style="display:none"><div id="date-tree"></div></div>`;
-  renderHistory();renderTree();
-}
-
-function switchHistTab(tab){
-  document.getElementById('ht-browse').classList.toggle('on',tab==='browse');
-  document.getElementById('ht-tree').classList.toggle('on',tab==='tree');
-  document.getElementById('browse-pane').style.display=tab==='browse'?'':'none';
-  document.getElementById('tree-pane').style.display=tab==='tree'?'':'none';
-}
-
-function setFilter(tag,btn){
-  activeFilter=tag;
-  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  renderHistory();
-}
-
-function renderHistory(){
-  const list=document.getElementById('hist-list');if(!list)return;
-  const tod=today();
-  const kwEl=document.getElementById('kw-search');
-  const kw=(kwEl?kwEl.value.trim():'').toLowerCase();
-  const keys=Object.keys(CLOUD).filter(k=>k.startsWith('j-')).sort().reverse();
-  if(!keys.length){list.innerHTML='<div class="empty">No entries yet</div>';return;}
-  list.innerHTML='';
-  let lastMonth='';let any=false;
-  function hl(txt){if(!kw||!txt)return txt||'';const re=new RegExp('('+kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');return txt.replace(re,'<mark class="search-highlight">$1</mark>');}
-  keys.slice(0,120).forEach(k=>{
-    try{
-      const v=CLOUD[k];if(!v)return;
-      const ds=k.replace('j-','');const isT=ds===tod;
-      const dateObj=new Date(ds+'T12:00:00');
-      const lbl=dateObj.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-      const has=(v.log&&v.log.length)||(Object.values(v.m||{}).some(Boolean))||(v.c?.c1||v.c?.c2||v.c?.c3);
-      if(!has)return;
-      let logEntries=v.log||[];
-      if(activeFilter!=='all')logEntries=logEntries.filter(x=>x.tag===activeFilter);
-      if(kw){
-        const matchLog=logEntries.filter(x=>(x.text+' '+(x.reply||'')).toLowerCase().includes(kw));
-        const matchM=Object.values(v.m||{}).some(x=>x&&x.toLowerCase().includes(kw));
-        const matchC=[v.c?.c1,v.c?.c2,v.c?.c3].filter(Boolean).some(x=>x.toLowerCase().includes(kw));
-        if(!matchLog.length&&!matchM&&!matchC)return;
-        logEntries=matchLog;
-      }
-      const monthKey=dateObj.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
-      if(monthKey!==lastMonth){
-        const mh=document.createElement('div');mh.className='month-header';mh.textContent=monthKey;
-        list.appendChild(mh);lastMonth=monthKey;
-      }
-      let inner='';
-      if(activeFilter==='all'&&!kw){
-        const ml=Object.values(v.m||{}).filter(Boolean);
-        if(ml.length){inner+=`<div class="hem">Morning</div>`;ml.forEach(x=>{inner+=`<div class="hbul">${hl(x)}</div>`;});}
-      }
-      if(logEntries.length){
-        inner+=`<div class="hem">Log (${logEntries.length})</div>`;
-        logEntries.forEach(x=>{inner+=`<div class="hli"><span class="hlt ${TC[x.tag]||'ti'}">${TL[x.tag]||x.tag}</span><span style="margin-left:5px">${hl(x.text)}${x.reply?'<br><span style="font-size:12px;color:#aaa">↳ '+hl(x.reply)+'</span>':''}</span></div>`;});
-      }
-      if(activeFilter==='all'&&!kw){
-        const cl=[v.c?.c1,v.c?.c2,v.c?.c3].filter(Boolean);
-        if(cl.length){inner+=`<div class="hem">Close</div>`;cl.forEach(x=>{inner+=`<div class="hbul">${hl(x)}</div>`;});}
-      }
-      const meta=[];
-      if(v.c?.star)meta.push('Awareness '+v.c.star+'/5');
-      if(v.c?.yn)meta.push({y:'Aligned',p:'Partial',n:'Not really'}[v.c.yn]||'');
-      const card=document.createElement('div');card.className='hcard';
-      card.innerHTML=`<div class="hdr"><span class="hdl">${lbl}</span>${isT?'<span class="tdy">Today</span>':''} ${meta.length?'<span class="hdm">'+meta.join(' · ')+'</span>':''}</div>${inner}`;
-      list.appendChild(card);any=true;
-    }catch(e){}
-  });
-  if(!any)list.innerHTML='<div class="empty">No entries found</div>';
-}
-
-function renderTree(){
-  const tree=document.getElementById('date-tree');if(!tree)return;
-  const tod=today();
-  const keys=Object.keys(CLOUD).filter(k=>k.startsWith('j-')).sort().reverse();
-  if(!keys.length){tree.innerHTML='<div class="empty">No entries yet</div>';return;}
-  const grouped={};
-  keys.forEach(k=>{
-    const v=CLOUD[k];if(!v)return;
-    const ds=k.replace('j-','');
-    const has=(v.log&&v.log.length)||(Object.values(v.m||{}).some(Boolean))||(v.c?.c1||v.c?.c2||v.c?.c3);
-    if(!has)return;
-    const d=new Date(ds+'T12:00:00');
-    const yr=d.getFullYear();const mo=d.toLocaleDateString('en-GB',{month:'long'});
-    if(!grouped[yr])grouped[yr]={};
-    if(!grouped[yr][mo])grouped[yr][mo]=[];
-    grouped[yr][mo].push({key:k,ds,d,v});
-  });
-  tree.innerHTML='';
-  Object.keys(grouped).sort().reverse().forEach(yr=>{
-    const ydiv=document.createElement('div');ydiv.className='tree-year';
-    const yid='yr-'+yr;
-    ydiv.innerHTML=`<button class="tree-year-btn" onclick="toggleTree('${yid}',this)">${yr} <span id="${yid}-arr">▼</span></button><div id="${yid}" class="tree-months" style="display:none"></div>`;
-    tree.appendChild(ydiv);
-    const mDiv=document.getElementById(yid);
-    Object.keys(grouped[yr]).forEach(mo=>{
-      const mid='mo-'+yr+'-'+mo.replace(/\s+/g,'');
-      const entries=grouped[yr][mo];
-      const mbtn=document.createElement('button');
-      mbtn.className='tree-month-btn';
-      mbtn.innerHTML=`${mo} <span style="font-size:11px;color:#aaa">${entries.length} day${entries.length>1?'s':''}</span>`;
-      mbtn.onclick=function(){toggleTree(mid,this);};
-      const mdiv=document.createElement('div');mdiv.id=mid;mdiv.className='tree-days';mdiv.style.display='none';
-      entries.forEach(({key,ds,d,v})=>{
-        const isT=ds===tod;
-        const dayLbl=d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
-        const logCount=v.log?v.log.length:0;
-        const dbtn=document.createElement('button');
-        dbtn.className='tree-day-btn'+(isT?' today-day':'');
-        dbtn.innerHTML=`<span>${dayLbl}${isT?' · Today':''}</span><span style="font-size:11px;color:#aaa">${logCount} log${logCount!==1?'s':''}</span>`;
-        const did='day-'+key;
-        dbtn.onclick=function(){
-          const existing=document.getElementById(did);
-          if(existing){existing.remove();return;}
-          const dd=document.createElement('div');dd.id=did;dd.className='day-detail';
-          let inner='';
-          const ml=Object.values(v.m||{}).filter(Boolean);
-          if(ml.length){inner+=`<div class="hem">Morning</div>`;ml.forEach(x=>{inner+=`<div class="hbul">${x}</div>`;});}
-          if(v.log&&v.log.length){
-            inner+=`<div class="hem">Log</div>`;
-            v.log.forEach(x=>{inner+=`<div class="hli"><span class="hlt ${TC[x.tag]||'ti'}">${TL[x.tag]||x.tag}</span><span style="margin-left:5px">${x.text}${x.reply?'<br><span style="font-size:12px;color:#aaa">↳ '+x.reply+'</span>':''}</span></div>`;});
-          }
-          const cl=[v.c?.c1,v.c?.c2,v.c?.c3].filter(Boolean);
-          if(cl.length){inner+=`<div class="hem">Close</div>`;cl.forEach(x=>{inner+=`<div class="hbul">${x}</div>`;});}
-          const meta=[];
-          if(v.c?.star)meta.push('Awareness '+v.c.star+'/5');
-          if(v.c?.yn)meta.push({y:'Aligned',p:'Partial',n:'Not really'}[v.c.yn]||'');
-          if(meta.length)inner+=`<div style="font-size:12px;color:#aaa;margin-top:6px">${meta.join(' · ')}</div>`;
-          if(!inner)inner='<div class="empty" style="padding:10px 0">No content</div>';
-          dd.innerHTML=inner;
-          dbtn.parentNode.insertBefore(dd,dbtn.nextSibling);
-        };
-        mdiv.appendChild(dbtn);
-      });
-      mDiv.appendChild(mbtn);mDiv.appendChild(mdiv);
-    });
-  });
-}
-
-function toggleTree(id,btn){
-  const el=document.getElementById(id);if(!el)return;
-  const open=el.style.display==='none';
-  el.style.display=open?'':'none';
-  if(btn)btn.classList.toggle('open',open);
-  const arr=document.getElementById(id+'-arr');
-  if(arr)arr.textContent=open?'▲':'▼';
-}
-
-
 function checkMonthBanner(){
   const now=new Date();
-  const isFirstWeek=now.getDate()<=7;
-  if(!isFirstWeek)return;
+  if(now.getDate()>7)return;
   const monthKey='banner-'+now.getFullYear()+'-'+(now.getMonth()+1);
-  const dismissed=localStorage.getItem(monthKey);
-  if(dismissed)return;
+  if(localStorage.getItem(monthKey))return;
   const prevMonth=new Date(now.getFullYear(),now.getMonth()-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
-  const banner=document.createElement('div');
-  banner.id='month-banner';banner.className='month-banner';
+  const banner=document.createElement('div');banner.id='month-banner';banner.className='month-banner';
   banner.innerHTML=`
     <div class="month-banner-text">
       <div class="month-banner-title">New month 🎉</div>
-      Review your entries from ${prevMonth} — see how you grew, what patterns showed up, and what to carry forward.
+      Review your entries from ${prevMonth} to see how you grew and what to carry forward.
     </div>
     <div class="month-banner-btns">
       <button class="banner-review-btn" onclick="doBannerReview('${monthKey}')">Review now</button>
@@ -641,43 +503,28 @@ function checkMonthBanner(){
   const pane=document.getElementById('pane');
   if(pane)pane.insertBefore(banner,pane.firstChild);
 }
-
-function dismissBanner(key){
-  localStorage.setItem(key,'dismissed');
-  const b=document.getElementById('month-banner');if(b)b.remove();
-}
-
-function doBannerReview(key){
-  localStorage.setItem(key,'done');
-  const b=document.getElementById('month-banner');if(b)b.remove();
-  // Get previous month range (last 30-60 days)
+function dismissBanner(key){localStorage.setItem(key,'dismissed');const b=document.getElementById('month-banner');if(b)b.remove();}
+async function doBannerReview(key){
+  localStorage.setItem(key,'done');const b=document.getElementById('month-banner');if(b)b.remove();
   const now=new Date();
-  const daysInPrevMonth=new Date(now.getFullYear(),now.getMonth(),0).getDate();
-  const data=buildExport(daysInPrevMonth+now.getDate());
-  if(!data){alert('No entries found for last month.');return;}
+  const days=new Date(now.getFullYear(),now.getMonth(),0).getDate()+now.getDate();
   const prevMonth=new Date(now.getFullYear(),now.getMonth()-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
-  const prompt=data+'\n===============\nReview my journal entries for '+prevMonth+'. Give me:\n1. Monthly growth arc — how did I develop over the month?\n2. Key patterns and recurring themes\n3. Leadership moments and how I showed up\n4. Positive behaviours to reinforce\n5. Honest watch-outs or blind spots\n6. What to focus on in the month ahead\n\nBe direct, specific, and honest. Reference actual entries.';
-  navigator.clipboard.writeText(prompt).then(()=>{
-    setTimeout(()=>{window.open('https://claude.ai/new','_blank');},600);
-  }).catch(()=>{alert('Could not copy — try the Review tab manually.');});
+  const data=await buildExport(days);
+  if(!data){alert('No entries found for last month.');return;}
+  const prompt=data+'\n===============\nReview my journal entries for '+prevMonth+'. Give me my monthly growth arc, key patterns, leadership development, positive behaviours to reinforce, honest blind spots, and what to focus on next month.';
+  navigator.clipboard.writeText(prompt).then(()=>{setTimeout(()=>{window.open(CLAUDE_URL,'_blank');},600);});
 }
 
-
-function getReviews(){
-  return CLOUD['_reviews']||[];
+// Reviews tab
+function getRevs(){return CACHE['_reviews']||[];}
+async function saveRevs(arr){
+  CACHE['_reviews']=arr;
+  try{localStorage.setItem('backup__reviews',JSON.stringify(arr));}catch(e){}
+  await sbSet('_reviews',arr);
 }
-function saveReviews(arr){
-  CLOUD['_reviews']=arr;
-  schedulePush();
-}
-
-let activeRevTab='today';
-let expandedRevs=new Set();
-let revType='today';
 
 function pV(){
-  const p=document.getElementById('pane');
-  p.innerHTML=`
+  document.getElementById('pane').innerHTML=`
   <div class="rev-tabs">
     <button class="rev-tab on" id="rvt-saved" onclick="switchRevTab('saved')">Saved</button>
     <button class="rev-tab" id="rvt-add" onclick="switchRevTab('add')">+ Add Review</button>
@@ -697,7 +544,8 @@ function pV(){
     </div>
   </div>`;
   document.getElementById('rev-save-btn').addEventListener('click',saveNewReview);
-  renderSavedReviews();
+  // Load reviews from supabase
+  sbGet('_reviews').then(data=>{if(data)CACHE['_reviews']=data;renderSavedReviews();});
 }
 
 function switchRevTab(tab){
@@ -705,114 +553,240 @@ function switchRevTab(tab){
   document.getElementById('rvt-add').classList.toggle('on',tab==='add');
   document.getElementById('rev-saved-pane').style.display=tab==='saved'?'':'none';
   document.getElementById('rev-add-pane').style.display=tab==='add'?'':'none';
-  if(tab==='add'){
-    setTimeout(()=>{
-      const ta=document.getElementById('rev-paste');
-      if(ta){autoResize(ta);ta.addEventListener('input',()=>autoResize(ta));}
-    },50);
-  }
+  if(tab==='add'){setTimeout(()=>{const ta=document.getElementById('rev-paste');if(ta){autoResize(ta);ta.addEventListener('input',()=>autoResize(ta));}},50);}
 }
 
-function setRevType(type,btn){
-  revType=type;
-  document.querySelectorAll('.rtb').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-}
+function setRevType(type,btn){revType=type;document.querySelectorAll('.rtb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
 
-function saveNewReview(){
-  const ta=document.getElementById('rev-paste');
-  if(!ta)return;
-  const text=ta.value.trim();
-  if(!text)return;
-  const reviews=getReviews();
-  reviews.unshift({
-    id:Date.now(),
-    date:new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}),
-    dateRaw:new Date().toISOString().slice(0,10),
-    type:revType,
-    text
-  });
-  saveReviews(reviews);
-  ta.value='';autoResize(ta);
-  fl('rev-ok');
+async function saveNewReview(){
+  const ta=document.getElementById('rev-paste');if(!ta)return;
+  const text=ta.value.trim();if(!text)return;
+  const revs=getRevs();
+  revs.unshift({id:Date.now(),date:new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}),dateRaw:today(),type:revType,text});
+  await saveRevs(revs);
+  ta.value='';autoResize(ta);fl('rev-ok');
   setTimeout(()=>{switchRevTab('saved');renderSavedReviews();},1000);
 }
 
 function renderSavedReviews(){
   const list=document.getElementById('rev-saved-pane');if(!list)return;
-  const reviews=getReviews();
-  if(!reviews.length){
-    list.innerHTML=`<div class="empty-rev">No reviews saved yet.<br>Do a review in the Review tab,<br>paste Claude's response here to save it.</div>`;
-    return;
-  }
+  const revs=getRevs();
+  if(!revs.length){list.innerHTML=`<div class="empty-rev">No reviews saved yet.<br>Do a review in the Review tab,<br>then paste Claude's response here.</div>`;return;}
   list.innerHTML='';
   const typeLabel={today:'Today',month:'Month',alltime:'All time'};
   const typeClass={today:'today',month:'month',alltime:'alltime'};
-  reviews.forEach(rev=>{
-    const isExpanded=expandedRevs.has(rev.id);
+  revs.forEach(rev=>{
+    const isExp=expandedRevs.has(rev.id);
     const card=document.createElement('div');card.className='rev-card';
     card.innerHTML=`
       <div class="rev-card-header">
         <span class="rev-card-date">${rev.date}</span>
         <span class="rev-card-type ${typeClass[rev.type]||''}">${typeLabel[rev.type]||rev.type}</span>
       </div>
-      <div class="${isExpanded?'rev-body':'rev-body-preview'}" id="revbody-${rev.id}">${rev.text}</div>
+      <div class="${isExp?'rev-body':'rev-body-preview'}" id="revbody-${rev.id}">${rev.text}</div>
       <div class="rev-actions">
-        <button class="rev-expand-btn" id="revexp-${rev.id}">${isExpanded?'Show less':'Read full'}</button>
+        <button class="rev-expand-btn" id="revexp-${rev.id}">${isExp?'Show less':'Read full'}</button>
         <button class="rev-copy-btn" id="revcopy-${rev.id}">📋 Copy</button>
         <button class="rev-delete-btn" id="revdel-${rev.id}">Delete</button>
       </div>`;
     list.appendChild(card);
     document.getElementById('revexp-'+rev.id).addEventListener('click',()=>{
-      if(expandedRevs.has(rev.id)){expandedRevs.delete(rev.id);}else{expandedRevs.add(rev.id);}
+      if(expandedRevs.has(rev.id))expandedRevs.delete(rev.id);else expandedRevs.add(rev.id);
       renderSavedReviews();
     });
     document.getElementById('revcopy-'+rev.id).addEventListener('click',()=>{
       navigator.clipboard.writeText(rev.text).then(()=>{
         const b=document.getElementById('revcopy-'+rev.id);
-        b.textContent='✓ Copied';
-        setTimeout(()=>{b.textContent='📋 Copy';},2000);
-      }).catch(()=>{
-        const b=document.getElementById('revcopy-'+rev.id);
-        b.textContent='Failed';
-        setTimeout(()=>{b.textContent='📋 Copy';},2000);
+        b.textContent='✓ Copied';setTimeout(()=>{b.textContent='📋 Copy';},2000);
       });
     });
-    document.getElementById('revdel-'+rev.id).addEventListener('click',()=>{
+    document.getElementById('revdel-'+rev.id).addEventListener('click',async()=>{
       if(!confirm('Delete this review?'))return;
-      const updated=getReviews().filter(r=>r.id!==rev.id);
-      saveReviews(updated);renderSavedReviews();
+      const updated=getRevs().filter(r=>r.id!==rev.id);
+      await saveRevs(updated);renderSavedReviews();
     });
   });
 }
 
+// History
+function setFilter(tag,btn){activeFilter=tag;document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderHistory();}
 
-async function manualSync(){
-  const btn=document.getElementById('syncbtn');
-  if(btn){btn.textContent='Syncing...';btn.disabled=true;}
-  try{
-    localStorage.setItem('jrnl_backup',JSON.stringify(CLOUD));
-    const r=await fetch(BIN_URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},body:JSON.stringify(CLOUD)});
-    if(!r.ok)throw new Error();
-    if(btn){btn.textContent='Synced ✓';setTimeout(()=>{btn.textContent='Sync';btn.disabled=false;},2000);}
-  }catch(e){
-    if(btn){btn.textContent='Failed';setTimeout(()=>{btn.textContent='Sync';btn.disabled=false;},2000);}
-  }
+async function pH(){
+  document.getElementById('pane').innerHTML=`
+  <div class="hist-tabs">
+    <button class="hist-tab on" id="ht-browse" onclick="switchHistTab('browse')">Browse</button>
+    <button class="hist-tab" id="ht-tree" onclick="switchHistTab('tree')">By Date</button>
+  </div>
+  <div id="browse-pane">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="kw-search" placeholder="Search entries..." oninput="renderHistory()">
+    </div>
+    <div class="filter-row">
+      <button class="fb on" onclick="setFilter('all',this)">All</button>
+      <button class="fb" onclick="setFilter('insight',this)" style="background:#eff6ff;color:#1d4ed8;border-color:#dbeafe">Insight</button>
+      <button class="fb" onclick="setFilter('leadership',this)" style="background:#f0fdf4;color:#15803d;border-color:#bbf7d0">Leadership</button>
+      <button class="fb" onclick="setFilter('energy',this)" style="background:#fffbeb;color:#b45309;border-color:#fde68a">Energy</button>
+      <button class="fb" onclick="setFilter('decision',this)" style="background:#fef2f2;color:#b91c1c;border-color:#fecaca">Decision</button>
+      <button class="fb" onclick="setFilter('relationship',this)" style="background:#f5f3ff;color:#6d28d9;border-color:#ddd6fe">Relationship</button>
+      <button class="fb" onclick="setFilter('mindset',this)" style="background:#fdf2f8;color:#9d174d;border-color:#fbcfe8">Mindset</button>
+      <button class="fb" onclick="setFilter('culture',this)" style="background:#fefce8;color:#92400e;border-color:#fef08a">Culture</button>
+    </div>
+    <div id="hist-list"><div class="thinking">Loading...</div></div>
+  </div>
+  <div id="tree-pane" style="display:none"><div id="date-tree"><div class="thinking">Loading...</div></div></div>`;
+  renderHistory();
 }
 
-function doStreak(){
-  const keys=Object.keys(CLOUD).filter(k=>k.startsWith('j-'));
-  const ks=new Set(keys.map(k=>k.replace('j-','')));
+async function renderHistory(){
+  const list=document.getElementById('hist-list');if(!list)return;
+  const tod=today();
+  const kwEl=document.getElementById('kw-search');
+  const kw=(kwEl?kwEl.value.trim():'').toLowerCase();
+  const rows=await sbGetAll();
+  const keys=rows.filter(r=>r.id.startsWith('j-')).map(r=>r.id).sort().reverse();
+  const dataMap={};rows.forEach(r=>{dataMap[r.id]=r.data;});
+  // Also check cache
+  Object.keys(CACHE).filter(k=>k.startsWith('j-')).forEach(k=>{if(!dataMap[k])dataMap[k]=CACHE[k];});
+  if(!keys.length&&!Object.keys(dataMap).filter(k=>k.startsWith('j-')).length){list.innerHTML='<div class="empty">No entries yet</div>';return;}
+  const allKeys=[...new Set([...keys,...Object.keys(dataMap).filter(k=>k.startsWith('j-'))])].sort().reverse();
+  list.innerHTML='';
+  let lastMonth='';let any=false;
+  function hl(txt){if(!kw||!txt)return txt||'';const re=new RegExp('('+kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');return txt.replace(re,'<mark class="search-highlight">$1</mark>');}
+  allKeys.slice(0,120).forEach(k=>{
+    try{
+      const v=dataMap[k];if(!v)return;
+      const ds=k.replace('j-','');const isT=ds===tod;
+      const dateObj=new Date(ds+'T12:00:00');
+      const lbl=dateObj.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+      let logEntries=v.log||[];
+      if(activeFilter!=='all')logEntries=logEntries.filter(x=>x.tag===activeFilter);
+      if(kw){
+        const ml=Object.values(v.m||{}).filter(x=>x&&x.toLowerCase().includes(kw));
+        const cl=[v.c?.c1,v.c?.c2,v.c?.c3].filter(x=>x&&x.toLowerCase().includes(kw));
+        logEntries=logEntries.filter(x=>(x.text+' '+(x.reply||'')).toLowerCase().includes(kw));
+        if(!logEntries.length&&!ml.length&&!cl.length)return;
+      }
+      const monthKey=dateObj.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+      if(monthKey!==lastMonth){const mh=document.createElement('div');mh.className='month-header';mh.textContent=monthKey;list.appendChild(mh);lastMonth=monthKey;}
+      let inner='';
+      if(activeFilter==='all'&&!kw){const ml=Object.values(v.m||{}).filter(Boolean);if(ml.length){inner+=`<div class="hem">Morning</div>`;ml.forEach(x=>{inner+=`<div class="hbul">${hl(x)}</div>`;});}}
+      if(logEntries.length){inner+=`<div class="hem">Log (${logEntries.length})</div>`;logEntries.forEach(x=>{inner+=`<div class="hli"><span class="hlt ${TC[x.tag]||'ti'}">${TL[x.tag]||x.tag}</span><span style="margin-left:5px">${hl(x.text)}${x.reply?'<br><span style="font-size:12px;color:#aaa">↳ '+hl(x.reply)+'</span>':''}</span></div>`;});}
+      if(activeFilter==='all'&&!kw){const cl=[v.c?.c1,v.c?.c2,v.c?.c3].filter(Boolean);if(cl.length){inner+=`<div class="hem">Close</div>`;cl.forEach(x=>{inner+=`<div class="hbul">${hl(x)}</div>`;});}}
+      const meta=[];if(v.c?.star)meta.push('Awareness '+v.c.star+'/5');if(v.c?.yn)meta.push({y:'Aligned',p:'Partial',n:'Not really'}[v.c.yn]||'');
+      const card=document.createElement('div');card.className='hcard';
+      card.innerHTML=`<div class="hdr"><span class="hdl">${lbl}</span>${isT?'<span class="tdy">Today</span>':''} ${meta.length?'<span class="hdm">'+meta.join(' · ')+'</span>':''}</div>${inner}`;
+      list.appendChild(card);any=true;
+    }catch(e){}
+  });
+  if(!any)list.innerHTML='<div class="empty">No entries found</div>';
+  // Also render tree with same data
+  renderTree(dataMap);
+}
+
+function switchHistTab(tab){
+  document.getElementById('ht-browse').classList.toggle('on',tab==='browse');
+  document.getElementById('ht-tree').classList.toggle('on',tab==='tree');
+  document.getElementById('browse-pane').style.display=tab==='browse'?'':'none';
+  document.getElementById('tree-pane').style.display=tab==='tree'?'':'none';
+}
+
+function renderTree(dataMap){
+  const tree=document.getElementById('date-tree');if(!tree)return;
+  const tod=today();
+  const keys=Object.keys(dataMap).filter(k=>k.startsWith('j-')).sort().reverse();
+  if(!keys.length){tree.innerHTML='<div class="empty">No entries yet</div>';return;}
+  const grouped={};
+  keys.forEach(k=>{
+    const v=dataMap[k];if(!v)return;
+    const ds=k.replace('j-','');
+    const has=(v.log&&v.log.length)||(Object.values(v.m||{}).some(Boolean))||(v.c?.c1||v.c?.c2||v.c?.c3);
+    if(!has)return;
+    const d=new Date(ds+'T12:00:00');
+    const yr=d.getFullYear();const mo=d.toLocaleDateString('en-GB',{month:'long'});
+    if(!grouped[yr])grouped[yr]={};
+    if(!grouped[yr][mo])grouped[yr][mo]=[];
+    grouped[yr][mo].push({key:k,ds,d,v});
+  });
+  tree.innerHTML='';
+  Object.keys(grouped).sort().reverse().forEach(yr=>{
+    const ydiv=document.createElement('div');ydiv.className='tree-year';
+    const yid='yr-'+yr;
+    ydiv.innerHTML=`<button class="tree-year-btn" onclick="toggleTree('${yid}',this)">${yr} <span id="${yid}-arr">▼</span></button><div id="${yid}" class="tree-months" style="display:none"></div>`;
+    tree.appendChild(ydiv);
+    const mDiv=document.getElementById(yid);
+    Object.keys(grouped[yr]).forEach(mo=>{
+      const mid='mo-'+yr+'-'+mo.replace(/\s+/g,'');
+      const entries=grouped[yr][mo];
+      const mbtn=document.createElement('button');mbtn.className='tree-month-btn';
+      mbtn.innerHTML=`${mo} <span style="font-size:11px;color:#aaa">${entries.length} day${entries.length>1?'s':''}</span>`;
+      mbtn.onclick=function(){toggleTree(mid,this);};
+      const mdiv=document.createElement('div');mdiv.id=mid;mdiv.className='tree-days';mdiv.style.display='none';
+      entries.forEach(({key,ds,d,v})=>{
+        const isT=ds===tod;
+        const dayLbl=d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+        const logCount=v.log?v.log.length:0;
+        const dbtn=document.createElement('button');dbtn.className='tree-day-btn'+(isT?' today-day':'');
+        dbtn.innerHTML=`<span>${dayLbl}${isT?' · Today':''}</span><span style="font-size:11px;color:#aaa">${logCount} log${logCount!==1?'s':''}</span>`;
+        const did='day-'+key;
+        dbtn.onclick=function(){
+          const existing=document.getElementById(did);if(existing){existing.remove();return;}
+          const dd=document.createElement('div');dd.id=did;dd.className='day-detail';
+          let inner='';
+          const ml=Object.values(v.m||{}).filter(Boolean);
+          if(ml.length){inner+=`<div class="hem">Morning</div>`;ml.forEach(x=>{inner+=`<div class="hbul">${x}</div>`;});}
+          if(v.log&&v.log.length){inner+=`<div class="hem">Log</div>`;v.log.forEach(x=>{inner+=`<div class="hli"><span class="hlt ${TC[x.tag]||'ti'}">${TL[x.tag]||x.tag}</span><span style="margin-left:5px">${x.text}${x.reply?'<br><span style="font-size:12px;color:#aaa">↳ '+x.reply+'</span>':''}</span></div>`;});}
+          const cl=[v.c?.c1,v.c?.c2,v.c?.c3].filter(Boolean);
+          if(cl.length){inner+=`<div class="hem">Close</div>`;cl.forEach(x=>{inner+=`<div class="hbul">${x}</div>`;});}
+          const meta=[];if(v.c?.star)meta.push('Awareness '+v.c.star+'/5');if(v.c?.yn)meta.push({y:'Aligned',p:'Partial',n:'Not really'}[v.c.yn]||'');
+          if(meta.length)inner+=`<div style="font-size:12px;color:#aaa;margin-top:6px">${meta.join(' · ')}</div>`;
+          if(!inner)inner='<div class="empty" style="padding:10px 0">No content</div>';
+          dd.innerHTML=inner;dbtn.parentNode.insertBefore(dd,dbtn.nextSibling);
+        };
+        mdiv.appendChild(dbtn);
+      });
+      mDiv.appendChild(mbtn);mDiv.appendChild(mdiv);
+    });
+  });
+}
+
+function toggleTree(id,btn){
+  const el=document.getElementById(id);if(!el)return;
+  const open=el.style.display==='none';el.style.display=open?'':'none';
+  if(btn)btn.classList.toggle('open',open);
+  const arr=document.getElementById(id+'-arr');if(arr)arr.textContent=open?'▲':'▼';
+}
+
+async function doStreak(){
+  const rows=await sbGetAll();
+  const ks=new Set(rows.filter(r=>r.id.startsWith('j-')).map(r=>r.id.replace('j-','')));
+  Object.keys(CACHE).filter(k=>k.startsWith('j-')).forEach(k=>ks.add(k.replace('j-','')));
   let n=0;const d=new Date();
   for(let i=0;i<60;i++){
-    if(ks.has(d.toISOString().slice(0,10))){n++;d.setDate(d.getDate()-1);}
+    if(ks.has(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))){n++;d.setDate(d.getDate()-1);}
     else if(i===0)d.setDate(d.getDate()-1);else break;
   }
   const el=document.getElementById('slbl');if(el)el.textContent=n>1?n+' day streak':'';
 }
 
+// Restore existing data on first load
+async function restoreFromBackup(){
+  // Check localStorage for any backed up entries and push to supabase if not there
+  const existing=await sbGetAll();
+  const existingIds=new Set(existing.map(r=>r.id));
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.startsWith('backup_')){
+      const id=k.replace('backup_','');
+      if(!existingIds.has(id)){
+        try{const d=JSON.parse(localStorage.getItem(k));await sbSet(id,d);existingIds.add(id);}catch(e){}
+      }
+    }
+  }
+}
+
 document.getElementById('dlbl').textContent=dtStr();
-loadCloud().then(()=>{doStreak();show('m');});
+restoreFromBackup().then(()=>{doStreak();show('m');});
 </script>
 </body>
 </html>
