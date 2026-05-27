@@ -849,7 +849,6 @@ function toggleTree(id,btn){
   const arr=document.getElementById(id+'-arr');if(arr)arr.textContent=open?'▲':'▼';
 }
 
-async 
 function toggleDark(){
   const isDark=document.body.classList.toggle('dark');
   localStorage.setItem('darkmode',isDark?'1':'0');
