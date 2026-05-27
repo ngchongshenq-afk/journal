@@ -132,6 +132,98 @@ textarea:focus{outline:none;border-color:#1a1a1a;background:#fff}
 .empty{text-align:center;color:#bbb;font-size:14px;padding:30px 0}
 .empty-rev{text-align:center;color:#bbb;font-size:14px;padding:30px 0;line-height:1.8}
 .thinking{text-align:center;font-size:14px;color:#aaa;padding:24px 0}
+
+:root{
+  --bg:#f5f5f5;--bg2:#fff;--bg3:#fafafa;
+  --border:#e5e5e5;--border2:#e0e0e0;
+  --text:#1a1a1a;--text2:#666;--text3:#aaa;--text4:#999;
+  --shadow:none;
+}
+body.dark{
+  --bg:#111;--bg2:#1c1c1c;--bg3:#252525;
+  --border:#2a2a2a;--border2:#333;
+  --text:#f0f0f0;--text2:#aaa;--text3:#666;--text4:#555;
+}
+body{background:var(--bg);color:var(--text)}
+#topbar{background:var(--bg2);border-bottom-color:var(--border)}
+#dlbl{color:var(--text2)}
+#syncbtn{background:var(--bg2);color:var(--text2);border-color:var(--border)}
+#darkbtn{background:var(--bg2);color:var(--text2);border-color:var(--border);font-size:15px;width:30px;height:30px;border-radius:50%;border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+#tabs{background:var(--bg2);border-bottom-color:var(--border)}
+.tb{background:var(--bg2);color:var(--text2);border-color:var(--border2)}
+.tb.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+#pane{background:var(--bg)}
+.card{background:var(--bg2);border-color:var(--border)}
+.lbl{color:var(--text4)}
+.rl{color:var(--text2)}
+textarea{background:var(--bg3);color:var(--text);border-color:var(--border2)}
+textarea:focus{background:var(--bg2);border-color:var(--text)}
+.btn{background:var(--text);color:var(--bg)}
+.sinput{background:var(--bg2);border-color:var(--border)}
+.sta{background:var(--bg3);color:var(--text);border-color:var(--border2)}
+.sta:focus{background:var(--bg2);border-color:var(--text)}
+.sbtn{background:var(--text);color:var(--bg)}
+.divlbl{color:var(--text3)}
+.divlbl::before,.divlbl::after{background:var(--border)}
+.li{background:var(--bg2);border-color:var(--border)}
+.ltime{color:var(--text3)}
+.ltxt{color:var(--text)}
+.chips{border-top-color:var(--border)}
+.chip{background:#1e3a5f;color:#93c5fd}
+.rta{background:var(--bg3);color:var(--text);border-color:var(--border2)}
+.rta:focus{border-color:var(--text)}
+.rsave{background:var(--bg2);color:var(--text2);border-color:var(--border)}
+.abtn{color:var(--text3)}
+.eta{background:var(--bg3);color:var(--text);border-color:var(--text)}
+.esave{background:var(--text);color:var(--bg)}
+.ecancel{background:var(--bg2);color:var(--text2);border-color:var(--border)}
+.star{background:var(--bg2);color:var(--text3);border-color:var(--border2)}
+.ynb{background:var(--bg2);color:var(--text2);border-color:var(--border2)}
+.review-option{background:var(--bg2);border-color:var(--border)}
+.review-title{color:var(--text)}
+.review-desc{color:var(--text3)}
+.prompt-preview{background:var(--bg3);color:var(--text3)}
+.rev-tabs{border-color:var(--border2)}
+.rev-tab{background:var(--bg2);color:var(--text2)}
+.rev-tab.on{background:var(--text);color:var(--bg)}
+.rev-card{background:var(--bg2);border-color:var(--border)}
+.rev-card-date{color:var(--text)}
+.rev-body,.rev-body-preview{color:var(--text2)}
+.rev-actions{border-top-color:var(--border)}
+.rev-expand-btn,.rev-copy-btn{background:var(--bg2);color:var(--text2);border-color:var(--border)}
+.paste-area{background:var(--bg3);color:var(--text);border-color:var(--border2)}
+.paste-area:focus{background:var(--bg2);border-color:var(--text)}
+.rtb{background:var(--bg2);color:var(--text2);border-color:var(--border)}
+.rtb.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.search-input{background:var(--bg2);color:var(--text);border-color:var(--border2)}
+.search-input:focus{border-color:var(--text)}
+.search-icon{color:var(--text3)}
+.hist-tabs{border-color:var(--border2)}
+.hist-tab{background:var(--bg2);color:var(--text2)}
+.hist-tab.on{background:var(--text);color:var(--bg)}
+.fb{background:var(--bg2);color:var(--text2);border-color:var(--border)}
+.fb.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.month-header{color:var(--text4);border-bottom-color:var(--border)}
+.hcard{background:var(--bg2);border-color:var(--border)}
+.hdl{color:var(--text)}
+.hdm{color:var(--text3)}
+.hem{color:var(--text4)}
+.hbul{color:var(--text2)}
+.hbul::before{color:var(--text3)}
+.hli{color:var(--text2)}
+.hlt{opacity:.9}
+.tree-year-btn{background:var(--bg2);border-color:var(--border2);color:var(--text)}
+.tree-months{border-color:var(--border2)}
+.tree-month-btn{background:var(--bg3);color:var(--text2);border-top-color:var(--border)}
+.tree-month-btn.open{background:var(--border);color:var(--text)}
+.tree-day-btn{background:var(--bg2);color:var(--text2);border-top-color:var(--border)}
+.day-detail{background:var(--bg3);border-top-color:var(--border)}
+.empty,.empty-rev,.thinking{color:var(--text3)}
+.month-banner{background:#422006;border-color:#92400e}
+.month-banner-title{color:#fef3c7}
+.month-banner-text{color:#fde68a}
+.banner-dismiss-btn{color:#fde68a;border-color:#92400e}
+
 </style>
 </head>
 <body>
@@ -139,7 +231,7 @@ textarea:focus{outline:none;border-color:#1a1a1a;background:#fff}
   <span id="dlbl"></span>
   <div id="topright">
     <span id="slbl"></span>
-    <button id="syncbtn" onclick="manualSync()">Sync</button>
+    <button id="darkbtn" onclick="toggleDark()" title="Toggle dark mode">🌙</button><button id="syncbtn" onclick="manualSync()">Sync</button>
   </div>
 </div>
 <div id="tabs">
@@ -757,7 +849,23 @@ function toggleTree(id,btn){
   const arr=document.getElementById(id+'-arr');if(arr)arr.textContent=open?'▲':'▼';
 }
 
-async function doStreak(){
+async 
+function toggleDark(){
+  const isDark=document.body.classList.toggle('dark');
+  localStorage.setItem('darkmode',isDark?'1':'0');
+  document.getElementById('darkbtn').textContent=isDark?'☀️':'🌙';
+}
+function initDark(){
+  const saved=localStorage.getItem('darkmode');
+  const prefersDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if(saved==='1'||(saved===null&&prefersDark)){
+    document.body.classList.add('dark');
+    const btn=document.getElementById('darkbtn');
+    if(btn)btn.textContent='☀️';
+  }
+}
+
+function doStreak(){
   const rows=await sbGetAll();
   const ks=new Set(rows.filter(r=>r.id.startsWith('j-')).map(r=>r.id.replace('j-','')));
   Object.keys(CACHE).filter(k=>k.startsWith('j-')).forEach(k=>ks.add(k.replace('j-','')));
@@ -785,7 +893,7 @@ async function restoreFromBackup(){
   }
 }
 
-document.getElementById('dlbl').textContent=dtStr();
+document.getElementById('dlbl').textContent=dtStr();initDark();
 restoreFromBackup().then(()=>{doStreak();show('m');});
 </script>
 </body>
