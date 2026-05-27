@@ -865,7 +865,7 @@ function initDark(){
   }
 }
 
-function doStreak(){
+async function doStreak(){
   const rows=await sbGetAll();
   const ks=new Set(rows.filter(r=>r.id.startsWith('j-')).map(r=>r.id.replace('j-','')));
   Object.keys(CACHE).filter(k=>k.startsWith('j-')).forEach(k=>ks.add(k.replace('j-','')));
