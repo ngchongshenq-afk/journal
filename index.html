@@ -716,6 +716,27 @@ function switchRevTab(tab){
 
 function setRevType(type,btn){revType=type;document.querySelectorAll('.rtb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
 
+
+function parseReviewDate(raw){
+  const months={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+  const parts=raw.trim().split(/\s+/);
+  if(parts.length>=3){
+    const day=parseInt(parts[0]);
+    const month=months[parts[1].toLowerCase().slice(0,3)];
+    const year=parseInt(parts[2]);
+    if(!isNaN(day)&&month!==undefined&&!isNaN(year)){
+      return new Date(year,month,day,12,0,0);
+    }
+  }
+  // fallback: try Month YYYY for monthly reviews
+  if(parts.length===2){
+    const month=months[parts[0].toLowerCase().slice(0,3)];
+    const year=parseInt(parts[1]);
+    if(month!==undefined&&!isNaN(year)){return new Date(year,month,1,12,0,0);}
+  }
+  return null;
+}
+
 function detectRevDate(text){
   const info=document.getElementById('rev-detect-info');if(!info)return;
   if(!text.trim()){info.textContent='';return;}
@@ -750,11 +771,12 @@ async function saveNewReview(){
     if(/monthly review/i.test(text))detectedType='month';
     else if(/all time review/i.test(text))detectedType='alltime';
     else{
-      // Check if detected date is today or a past date
       try{
-        const parsed=new Date(raw+'T12:00:00');
-        const parsedRaw=parsed.getFullYear()+'-'+String(parsed.getMonth()+1).padStart(2,'0')+'-'+String(parsed.getDate()).padStart(2,'0');
-        detectedType=parsedRaw===today()?'today':'specific';
+        const parsedCheck=parseReviewDate(raw);
+        if(parsedCheck&&!isNaN(parsedCheck)){
+          const parsedRaw=parsedCheck.getFullYear()+'-'+String(parsedCheck.getMonth()+1).padStart(2,'0')+'-'+String(parsedCheck.getDate()).padStart(2,'0');
+          detectedType=parsedRaw===today()?'today':'specific';
+        } else {detectedType='today';}
       }catch(e){detectedType='today';}
     }
     // parse the date
