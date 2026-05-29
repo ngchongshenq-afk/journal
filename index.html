@@ -711,7 +711,14 @@ function switchRevTab(tab){
   document.getElementById('rvt-add').classList.toggle('on',tab==='add');
   document.getElementById('rev-saved-pane').style.display=tab==='saved'?'':'none';
   document.getElementById('rev-add-pane').style.display=tab==='add'?'':'none';
-  if(tab==='add'){setTimeout(()=>{const ta=document.getElementById('rev-paste');if(ta){autoResize(ta);ta.addEventListener('input',()=>autoResize(ta));}},50);}
+  if(tab==='add'){setTimeout(()=>{
+    const ta=document.getElementById('rev-paste');
+    if(ta){
+      autoResize(ta);
+      ta.addEventListener('input',()=>{autoResize(ta);detectRevDate(ta.value);});
+      ta.addEventListener('paste',()=>{setTimeout(()=>{autoResize(ta);detectRevDate(ta.value);},100);});
+    }
+  },50);}
 }
 
 function setRevType(type,btn){revType=type;document.querySelectorAll('.rtb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
@@ -761,6 +768,7 @@ function detectRevDate(text){
 async function saveNewReview(){
   const ta=document.getElementById('rev-paste');if(!ta)return;
   const text=ta.value.trim();if(!text)return;
+  detectRevDate(text); // ensure info is updated
 
   // Auto-detect date from pasted text
   let detectedDate=null;let detectedDateRaw=null;let detectedType=revType;
