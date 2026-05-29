@@ -817,7 +817,7 @@ function renderSavedReviews(){
   const revs=getRevs();
   if(!revs.length){list.innerHTML=`<div class="empty-rev">No reviews saved yet.<br>Do a review in the Review tab,<br>then paste Claude's response here.</div>`;return;}
   list.innerHTML='';
-  const typeLabel={today:'Today',month:'Month',alltime:'All time',specific:'Specific date'};
+  const typeLabel={today:'Daily',month:'Monthly',alltime:'All Time',specific:'Daily'};
   const typeClass={today:'today',month:'month',alltime:'alltime',specific:'today'};
   revs.forEach(rev=>{
     const isExp=expandedRevs.has(rev.id);
