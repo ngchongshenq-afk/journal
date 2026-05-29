@@ -693,6 +693,7 @@ function pV(){
         <button class="rtb on" id="rt-today" onclick="setRevType('today',this)">Today</button>
         <button class="rtb" id="rt-month" onclick="setRevType('month',this)">Month</button>
         <button class="rtb" id="rt-alltime" onclick="setRevType('alltime',this)">All time</button>
+        <button class="rtb" id="rt-specific" onclick="setRevType('specific',this)">Specific date</button>
       </div>
       <textarea class="paste-area" id="rev-paste" placeholder="Paste Claude's review here — date will be auto-detected..." oninput="autoResize(this);detectRevDate(this.value)"></textarea>
       <div id="rev-detect-info" style="font-size:12px;color:var(--text3);margin-bottom:8px;min-height:16px"></div>
@@ -724,7 +725,8 @@ function detectRevDate(text){
     try{
       const parsed=new Date(raw+'T12:00:00');
       if(!isNaN(parsed)){
-        const type=/monthly review/i.test(text)?'Month':/all time review/i.test(text)?'All time':'Today';
+        
+        const type=/monthly review/i.test(text)?'Month':/all time review/i.test(text)?'All time':isToday?'Today':'Specific date';
         info.textContent='Will save as: '+parsed.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'})+' ('+type+')';
         info.style.color='var(--text-success, #15803d)';
         return;
@@ -747,7 +749,14 @@ async function saveNewReview(){
     // detect type from suffix
     if(/monthly review/i.test(text))detectedType='month';
     else if(/all time review/i.test(text))detectedType='alltime';
-    else detectedType='today';
+    else{
+      // Check if detected date is today or a past date
+      try{
+        const parsed=new Date(raw+'T12:00:00');
+        const parsedRaw=parsed.getFullYear()+'-'+String(parsed.getMonth()+1).padStart(2,'0')+'-'+String(parsed.getDate()).padStart(2,'0');
+        detectedType=parsedRaw===today()?'today':'specific';
+      }catch(e){detectedType='today';}
+    }
     // parse the date
     try{
       const parsed=new Date(raw+'T12:00:00');
@@ -765,7 +774,7 @@ async function saveNewReview(){
   // Update the type buttons to reflect detected type
   if(detectedType){
     document.querySelectorAll('.rtb').forEach(b=>b.classList.remove('on'));
-    const typeMap={today:'rt-today',month:'rt-month',alltime:'rt-alltime'};
+    const typeMap={today:'rt-today',month:'rt-month',alltime:'rt-alltime',specific:'rt-specific'};
     const btn=document.getElementById(typeMap[detectedType]);
     if(btn)btn.classList.add('on');
   }
@@ -786,8 +795,8 @@ function renderSavedReviews(){
   const revs=getRevs();
   if(!revs.length){list.innerHTML=`<div class="empty-rev">No reviews saved yet.<br>Do a review in the Review tab,<br>then paste Claude's response here.</div>`;return;}
   list.innerHTML='';
-  const typeLabel={today:'Today',month:'Month',alltime:'All time'};
-  const typeClass={today:'today',month:'month',alltime:'alltime'};
+  const typeLabel={today:'Today',month:'Month',alltime:'All time',specific:'Specific date'};
+  const typeClass={today:'today',month:'month',alltime:'alltime',specific:'today'};
   revs.forEach(rev=>{
     const isExp=expandedRevs.has(rev.id);
     const card=document.createElement('div');card.className='rev-card';
