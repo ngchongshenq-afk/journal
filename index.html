@@ -632,7 +632,7 @@ async function doCustomReview(){
     out+='\n';
   });
   const isSingleDay=from===to;
-  const prompt=out+'===============\n'+(isSingleDay?'Review my journal entries for this specific day. Give me:\n1. Key patterns and themes\n2. Leadership moments\n3. Energy arc\n4. Positive behaviours to reinforce\n5. Honest watch-outs\n6. What to carry forward\nBe direct, specific, honest.':'Review my journal entries for this date range. Give me:\n1. Key patterns and themes\n2. Leadership moments\n3. Energy arc across the period\n4. Positive behaviours to reinforce\n5. Honest watch-outs\n6. What to focus on going forward\nBe direct, specific, honest.');
+  const prompt=out+'===============\n'+(isSingleDay?'Start your response with \'DATE: [the date of these entries in DD Mon YYYY format]\' on the first line. Then review my journal entries for this specific day. Give me:\n1. Key patterns and themes\n2. Leadership moments\n3. Energy arc\n4. Positive behaviours to reinforce\n5. Honest watch-outs\n6. What to carry forward\nBe direct, specific, honest.':'Start your response with \'DATE: [start date] to [end date in DD Mon YYYY format]\' on the first line. Then review my journal entries for this date range. Give me:\n1. Key patterns and themes\n2. Leadership moments\n3. Energy arc across the period\n4. Positive behaviours to reinforce\n5. Honest watch-outs\n6. What to focus on going forward\nBe direct, specific, honest.');
   navigator.clipboard.writeText(prompt).then(()=>{
     if(btn){btn.classList.add('copied');btn.textContent='✓ Copied — opening Claude...';}
     setTimeout(()=>{window.open(CLAUDE_URL,'_blank');},600);
@@ -694,7 +694,8 @@ function pV(){
         <button class="rtb" id="rt-month" onclick="setRevType('month',this)">Month</button>
         <button class="rtb" id="rt-alltime" onclick="setRevType('alltime',this)">All time</button>
       </div>
-      <textarea class="paste-area" id="rev-paste" placeholder="Paste Claude's review here..." oninput="autoResize(this)"></textarea>
+      <textarea class="paste-area" id="rev-paste" placeholder="Paste Claude's review here — date will be auto-detected..." oninput="autoResize(this);detectRevDate(this.value)"></textarea>
+      <div id="rev-detect-info" style="font-size:12px;color:var(--text3);margin-bottom:8px;min-height:16px"></div>
       <button class="btn" id="rev-save-btn">Save review</button>
       <div class="ok" id="rev-ok" style="opacity:0"></div>
     </div>
@@ -714,11 +715,67 @@ function switchRevTab(tab){
 
 function setRevType(type,btn){revType=type;document.querySelectorAll('.rtb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
 
+function detectRevDate(text){
+  const info=document.getElementById('rev-detect-info');if(!info)return;
+  if(!text.trim()){info.textContent='';return;}
+  const dateMatch=text.match(/DATE:\s*(\d{1,2}\s+\w+\s+\d{4}|\w+\s+\d{4})/i);
+  if(dateMatch){
+    const raw=dateMatch[1].trim();
+    try{
+      const parsed=new Date(raw+'T12:00:00');
+      if(!isNaN(parsed)){
+        const type=/monthly review/i.test(text)?'Month':/all time review/i.test(text)?'All time':'Today';
+        info.textContent='Will save as: '+parsed.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'})+' ('+type+')';
+        info.style.color='var(--text-success, #15803d)';
+        return;
+      }
+    }catch(e){}
+  }
+  info.textContent='No date detected — will save as today';
+  info.style.color='var(--text3)';
+}
+
 async function saveNewReview(){
   const ta=document.getElementById('rev-paste');if(!ta)return;
   const text=ta.value.trim();if(!text)return;
+
+  // Auto-detect date from pasted text
+  let detectedDate=null;let detectedDateRaw=null;let detectedType=revType;
+  const dateMatch=text.match(/DATE:\s*(\d{1,2}\s+\w+\s+\d{4}|\w+\s+\d{4})/i);
+  if(dateMatch){
+    const raw=dateMatch[1].trim();
+    // detect type from suffix
+    if(/monthly review/i.test(text))detectedType='month';
+    else if(/all time review/i.test(text))detectedType='alltime';
+    else detectedType='today';
+    // parse the date
+    try{
+      const parsed=new Date(raw+'T12:00:00');
+      if(!isNaN(parsed)){
+        detectedDateRaw=parsed.getFullYear()+'-'+String(parsed.getMonth()+1).padStart(2,'0')+'-'+String(parsed.getDate()).padStart(2,'0');
+        detectedDate=parsed.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+      }
+    }catch(e){}
+  }
+
+  const finalDate=detectedDate||new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  const finalDateRaw=detectedDateRaw||today();
+  const finalType=detectedType;
+
+  // Update the type buttons to reflect detected type
+  if(detectedType){
+    document.querySelectorAll('.rtb').forEach(b=>b.classList.remove('on'));
+    const typeMap={today:'rt-today',month:'rt-month',alltime:'rt-alltime'};
+    const btn=document.getElementById(typeMap[detectedType]);
+    if(btn)btn.classList.add('on');
+  }
+
+  // Show detected info
+  const info=document.getElementById('rev-detect-info');
+  if(info)info.textContent=detectedDate?'Detected: '+finalDate+' ('+{today:'Today',month:'Month',alltime:'All time'}[finalType]+')':'No date detected — using today';
+
   const revs=getRevs();
-  revs.unshift({id:Date.now(),date:new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}),dateRaw:today(),type:revType,text});
+  revs.unshift({id:Date.now(),date:finalDate,dateRaw:finalDateRaw,type:finalType,text});
   await saveRevs(revs);
   ta.value='';autoResize(ta);fl('rev-ok');
   setTimeout(()=>{switchRevTab('saved');renderSavedReviews();},1000);
