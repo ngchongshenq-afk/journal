@@ -524,10 +524,10 @@ async function buildExport(days){
     const lbl=new Date(ds+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
     const has=(v.log&&v.log.length)||(Object.values(v.m||{}).some(Boolean))||(v.c?.c1||v.c?.c2||v.c?.c3);
     if(!has)return;
-    out+=`DATE: ${lbl}\n`;
+    out+='DATE: '+lbl+'\n';
     const ml=Object.values(v.m||{}).filter(Boolean);
     if(ml.length)out+='Morning: '+ml.join(' | ')+'\n';
-    if(v.log&&v.log.length){out+='Log:\n';v.log.forEach(x=>{out+=`  [${x.tag}] ${x.time} — ${x.text}${x.reply?' → '+x.reply:''}\n`;});}
+    if(v.log&&v.log.length){out+='Log:\n';v.log.forEach(x=>{out+='  ['+x.tag+'] '+x.time+' — '+x.text+(x.reply?' → '+x.reply:'')+'\n';});}
     const cl=[v.c?.c1,v.c?.c2,v.c?.c3].filter(Boolean);
     if(cl.length)out+='Close: '+cl.join(' | ')+'\n';
     if(v.c?.star)out+='Awareness: '+v.c.star+'/5\n';
@@ -589,7 +589,7 @@ function pR(){
     </div>
     <button class="review-btn" id="rb-custom" onclick="doCustomReview()">Copy & Open Claude</button>
     <div id="custom-err" style="font-size:12px;color:#b91c1c;margin-top:6px;min-height:14px"></div>
-  </div>\`;
+  </div>`;
   const now=new Date();
   const pad=n=>String(n).padStart(2,'0');
   const todayStr=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
@@ -621,10 +621,10 @@ async function doCustomReview(){
     const lbl=new Date(ds+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
     const has=(v.log&&v.log.length)||(Object.values(v.m||{}).some(Boolean))||(v.c?.c1||v.c?.c2||v.c?.c3);
     if(!has)return;
-    out+=`DATE: ${lbl}\n`;
+    out+='DATE: '+lbl+'\n';
     const ml=Object.values(v.m||{}).filter(Boolean);
     if(ml.length)out+='Morning: '+ml.join(' | ')+'\n';
-    if(v.log&&v.log.length){out+='Log:\n';v.log.forEach(x=>{out+=`  [${x.tag}] ${x.time} — ${x.text}${x.reply?' → '+x.reply:''}\n`;});}
+    if(v.log&&v.log.length){out+='Log:\n';v.log.forEach(x=>{out+='  ['+x.tag+'] '+x.time+' — '+x.text+(x.reply?' → '+x.reply:'')+'\n';});}
     const cl=[v.c?.c1,v.c?.c2,v.c?.c3].filter(Boolean);
     if(cl.length)out+='Close: '+cl.join(' | ')+'\n';
     if(v.c?.star)out+='Awareness: '+v.c.star+'/5\n';
