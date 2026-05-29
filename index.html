@@ -573,7 +573,71 @@ function pR(){
     <div class="review-desc">Full picture — long term patterns, growth over time, consistent strengths and blind spots.</div>
     <button class="review-btn" id="rb-all" onclick="doReview(0,'rb-all','Review all my journal entries. Give me:\\n1. Long term patterns and recurring themes\\n2. How I have grown over time\\n3. Consistent strengths to lean into\\n4. Persistent blind spots to address\\n5. What to focus on going forward\\nBe direct, specific, honest.')">Copy & Open Claude</button>
     <div class="prompt-preview">"Review all my entries — long term patterns, growth over time, consistent strengths and blind spots."</div>
-  </div>`;
+  </div>
+  <div class="review-option">
+    <div class="review-title">Specific date or range</div>
+    <div class="review-desc">Review any past day or custom date range.</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <div style="flex:1;min-width:120px">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">From</div>
+        <input type="date" id="date-from" style="width:100%;font-size:13px;border:1px solid var(--border2);border-radius:10px;padding:8px 10px;background:var(--bg3);color:var(--text);font-family:inherit;outline:none">
+      </div>
+      <div style="flex:1;min-width:120px">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">To</div>
+        <input type="date" id="date-to" style="width:100%;font-size:13px;border:1px solid var(--border2);border-radius:10px;padding:8px 10px;background:var(--bg3);color:var(--text);font-family:inherit;outline:none">
+      </div>
+    </div>
+    <button class="review-btn" id="rb-custom" onclick="doCustomReview()">Copy & Open Claude</button>
+    <div id="custom-err" style="font-size:12px;color:#b91c1c;margin-top:6px;min-height:14px"></div>
+  </div>\`;
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const todayStr=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+  const yest=new Date(now);yest.setDate(yest.getDate()-1);
+  const yesterdayStr=yest.getFullYear()+'-'+pad(yest.getMonth()+1)+'-'+pad(yest.getDate());
+  document.getElementById('date-from').value=yesterdayStr;
+  document.getElementById('date-to').value=todayStr;
+}
+
+async function doCustomReview(){
+  const from=document.getElementById('date-from').value;
+  const to=document.getElementById('date-to').value;
+  const err=document.getElementById('custom-err');
+  if(!from){if(err)err.textContent='Please select a start date';return;}
+  if(!to){if(err)err.textContent='Please select an end date';return;}
+  if(from>to){if(err)err.textContent='Start date must be before end date';return;}
+  if(err)err.textContent='';
+  const btn=document.getElementById('rb-custom');
+  if(btn){btn.textContent='Preparing...';btn.disabled=true;}
+  const rows=await sbGetAll();
+  const dataMap={};rows.forEach(r=>{dataMap[r.id]=r.data;});
+  Object.keys(CACHE).filter(k=>k.startsWith('j-')).forEach(k=>{if(!dataMap[k])dataMap[k]=CACHE[k];});
+  const keys=Object.keys(dataMap).filter(k=>{if(!k.startsWith('j-'))return false;const ds=k.replace('j-','');return ds>=from&&ds<=to;}).sort();
+  if(!keys.length){if(btn){btn.textContent='No entries found';setTimeout(()=>{btn.textContent='Copy & Open Claude';btn.disabled=false;},2500);}return;}
+  let out='JOURNAL ENTRIES\n===============\n\n';
+  keys.forEach(k=>{
+    const v=dataMap[k];if(!v)return;
+    const ds=k.replace('j-','');
+    const lbl=new Date(ds+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+    const has=(v.log&&v.log.length)||(Object.values(v.m||{}).some(Boolean))||(v.c?.c1||v.c?.c2||v.c?.c3);
+    if(!has)return;
+    out+=`DATE: ${lbl}\n`;
+    const ml=Object.values(v.m||{}).filter(Boolean);
+    if(ml.length)out+='Morning: '+ml.join(' | ')+'\n';
+    if(v.log&&v.log.length){out+='Log:\n';v.log.forEach(x=>{out+=`  [${x.tag}] ${x.time} — ${x.text}${x.reply?' → '+x.reply:''}\n`;});}
+    const cl=[v.c?.c1,v.c?.c2,v.c?.c3].filter(Boolean);
+    if(cl.length)out+='Close: '+cl.join(' | ')+'\n';
+    if(v.c?.star)out+='Awareness: '+v.c.star+'/5\n';
+    if(v.c?.yn)out+='Aligned: '+({y:'Yes',p:'Partially',n:'Not really'}[v.c.yn]||'')+'\n';
+    out+='\n';
+  });
+  const isSingleDay=from===to;
+  const prompt=out+'===============\n'+(isSingleDay?'Review my journal entries for this specific day. Give me:\n1. Key patterns and themes\n2. Leadership moments\n3. Energy arc\n4. Positive behaviours to reinforce\n5. Honest watch-outs\n6. What to carry forward\nBe direct, specific, honest.':'Review my journal entries for this date range. Give me:\n1. Key patterns and themes\n2. Leadership moments\n3. Energy arc across the period\n4. Positive behaviours to reinforce\n5. Honest watch-outs\n6. What to focus on going forward\nBe direct, specific, honest.');
+  navigator.clipboard.writeText(prompt).then(()=>{
+    if(btn){btn.classList.add('copied');btn.textContent='✓ Copied — opening Claude...';}
+    setTimeout(()=>{window.open(CLAUDE_URL,'_blank');},600);
+    setTimeout(()=>{if(btn){btn.classList.remove('copied');btn.textContent='Copy & Open Claude';btn.disabled=false;}},3000);
+  }).catch(()=>{if(btn){btn.textContent='Copy failed';btn.disabled=false;}});
 }
 
 function checkMonthBanner(){
