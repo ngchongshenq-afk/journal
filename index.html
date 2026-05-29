@@ -485,7 +485,7 @@ function renderSavedReviews(){
   revs.forEach(function(rev){
     var isExp=expandedRevs[rev.id];
     var card=document.createElement('div');card.className='rev-card';
-    card.innerHTML='<div class="rev-card-header"><span class="rev-card-date">'+rev.date+'</span><span class="rev-card-type '+(typeClass[rev.type]||'')+'">'+(typeLabel[rev.type]||rev.type)+'</span></div><div class="'+(isExp?'rev-body':'rev-body-preview')+'" id="revbody-'+rev.id+'">'+rev.text+'</div><div class="rev-actions"><button class="rev-expand-btn" id="revexp-'+rev.id+'">'+(isExp?'Show less':'Read full')+'</button><button class="rev-copy-btn" id="revcopy-'+rev.id+'">Copy</button><button class="rev-delete-btn" id="revdel-'+rev.id+'">Delete</button></div>';
+    card.innerHTML='<div class="rev-card-header"><span class="rev-card-date">'+(rev.date||'No date')+'</span><span class="rev-card-type '+(typeClass[rev.type]||'')+'">'+(typeLabel[rev.type]||rev.type)+'</span></div><div class="'+(isExp?'rev-body':'rev-body-preview')+'" id="revbody-'+rev.id+'">'+rev.text+'</div><div class="rev-actions"><button class="rev-expand-btn" id="revexp-'+rev.id+'">'+(isExp?'Show less':'Read full')+'</button><button class="rev-copy-btn" id="revcopy-'+rev.id+'">Copy</button><button class="rev-delete-btn" id="revdel-'+rev.id+'">Delete</button></div>';
     list.appendChild(card);
     document.getElementById('revexp-'+rev.id).addEventListener('click',function(){expandedRevs[rev.id]=!expandedRevs[rev.id];renderSavedReviews();});
     document.getElementById('revcopy-'+rev.id).addEventListener('click',function(){navigator.clipboard.writeText(rev.text).then(function(){var b=document.getElementById('revcopy-'+rev.id);b.textContent='Copied!';setTimeout(function(){b.textContent='Copy';},2000);});});
