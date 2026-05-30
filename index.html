@@ -507,6 +507,7 @@ body.light .search-highlight{background:rgba(120,53,15,0.12);color:var(--accent)
   align-items:center;justify-content:center;
   z-index:9999;
   padding:40px 24px;
+  touch-action:manipulation;
 }
 .lock-title{
   font-family:var(--serif);
@@ -532,6 +533,8 @@ body.light .search-highlight{background:rgba(120,53,15,0.12);color:var(--accent)
   display:grid;
   grid-template-columns:repeat(3,72px);
   gap:12px;
+  position:relative;
+  z-index:10000;
 }
 .numkey{
   width:72px;height:72px;border-radius:50%;
@@ -544,6 +547,9 @@ body.light .search-highlight{background:rgba(120,53,15,0.12);color:var(--accent)
   display:flex;align-items:center;justify-content:center;
   transition:all 0.12s;
   user-select:none;
+  position:relative;z-index:10000;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
 }
 .numkey:active{background:var(--surface3);border-color:var(--border2);transform:scale(0.94)}
 .numkey.del{font-size:18px;color:var(--text2)}
@@ -1150,12 +1156,16 @@ function pinSubmit() {
 }
 
 function initLock() {
-  // Wire up numpad
+  // Wire up numpad - use both click and touchend for mobile
   document.querySelectorAll('.numkey[data-n]').forEach(function(btn) {
-    btn.addEventListener('click', function() { pinPress(btn.dataset.n); });
+    btn.addEventListener('click', function(e) { e.preventDefault(); pinPress(btn.dataset.n); });
+    btn.addEventListener('touchend', function(e) { e.preventDefault(); pinPress(btn.dataset.n); });
   });
   var del = document.getElementById('pin-del');
-  if (del) del.addEventListener('click', pinDel);
+  if (del) {
+    del.addEventListener('click', function(e) { e.preventDefault(); pinDel(); });
+    del.addEventListener('touchend', function(e) { e.preventDefault(); pinDel(); });
+  }
 
   // Wire up hidden input for keyboard on desktop
   var inp = document.getElementById('pin-input');
@@ -1328,12 +1338,16 @@ function pinSubmit() {
 }
 
 function initLock() {
-  // Wire up numpad
+  // Wire up numpad - use both click and touchend for mobile
   document.querySelectorAll('.numkey[data-n]').forEach(function(btn) {
-    btn.addEventListener('click', function() { pinPress(btn.dataset.n); });
+    btn.addEventListener('click', function(e) { e.preventDefault(); pinPress(btn.dataset.n); });
+    btn.addEventListener('touchend', function(e) { e.preventDefault(); pinPress(btn.dataset.n); });
   });
   var del = document.getElementById('pin-del');
-  if (del) del.addEventListener('click', pinDel);
+  if (del) {
+    del.addEventListener('click', function(e) { e.preventDefault(); pinDel(); });
+    del.addEventListener('touchend', function(e) { e.preventDefault(); pinDel(); });
+  }
 
   // Wire up hidden input for keyboard on desktop
   var inp = document.getElementById('pin-input');
