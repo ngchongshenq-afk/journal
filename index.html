@@ -71,7 +71,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
   letter-spacing:0.3px;
   transition:all 0.15s;
 }
-#darkbtn{width:32px;padding:0;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px}
+#darkbtn,#lockbtn{width:32px;padding:0;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px}
+#lockbtn{border-radius:6px;border:1px solid var(--border2);background:var(--surface2);cursor:pointer;transition:all 0.15s}
+#lockbtn:hover{background:var(--surface3);border-color:var(--border2)}
 #darkbtn:hover,#syncbtn:hover{border-color:var(--border2);color:var(--text);background:var(--surface3)}
 
 /* Tabs */
@@ -503,7 +505,7 @@ body.light .search-highlight{background:rgba(120,53,15,0.12);color:var(--accent)
   background:var(--bg);
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
-  z-index:999;
+  z-index:9999;
   padding:40px 24px;
 }
 .lock-title{
@@ -558,7 +560,7 @@ body.light .search-highlight{background:rgba(120,53,15,0.12);color:var(--accent)
   <div id="topright">
     <span id="slbl"></span>
     <button id="darkbtn" onclick="toggleDark()">☀️</button>
-    <button id="syncbtn" onclick="manualSync()">Sync</button>
+    <button id="lockbtn" onclick="lockJournal()" title="Lock">🔒</button><button id="syncbtn" onclick="manualSync()">Sync</button>
   </div>
 </div>
 <div id="tabs">
@@ -1174,13 +1176,19 @@ function initLock() {
   var change = document.getElementById('lock-change');
   if (change) change.addEventListener('click', function() { showLock('set1'); });
 
-  // Show lock if PIN is set, else show set PIN screen
+  // Always show lock on load
   var stored = localStorage.getItem(PIN_KEY);
   if (stored) {
     showLock('unlock');
   } else {
     showLock('set1');
   }
+}
+
+function lockJournal() {
+  var stored = localStorage.getItem(PIN_KEY);
+  if (stored) { showLock('unlock'); }
+  else { showLock('set1'); }
 }
 
 document.getElementById('dlbl').textContent=dtStr();
@@ -1346,7 +1354,7 @@ function initLock() {
   var change = document.getElementById('lock-change');
   if (change) change.addEventListener('click', function() { showLock('set1'); });
 
-  // Show lock if PIN is set, else show set PIN screen
+  // Always show lock on load
   var stored = localStorage.getItem(PIN_KEY);
   if (stored) {
     showLock('unlock');
@@ -1355,13 +1363,19 @@ function initLock() {
   }
 }
 
+function lockJournal() {
+  var stored = localStorage.getItem(PIN_KEY);
+  if (stored) { showLock('unlock'); }
+  else { showLock('set1'); }
+}
+
 document.getElementById('dlbl').textContent=dtStr();
 initDark();
 initLock();
 restoreFromBackup().then(function(){doStreak();show('m');});
 </script>
 
-<div id="lockscreen" style="display:none">
+<div id="lockscreen">
   <div class="lock-title">Journal</div>
   <div class="lock-sub" id="lock-sub">Enter your PIN</div>
   <div class="pin-dots" id="pin-dots">
