@@ -116,7 +116,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 
 #topright{display:flex;align-items:center;gap:10px}
 
-#slbl{font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums;letter-spacing:0.5px}
+#slbl{font-size:12px;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:0.5px;font-weight:600}
 
 #darkbtn,#syncbtn{
 
@@ -1291,13 +1291,13 @@ var sv=0,yv='',eid=null,activeFilter='all',revType='today',expandedRevs={};
 
 var CACHE={};var saveTimer=null;
 
-function dk(){var d=new Date();return'j-'+d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function dk(){var d=new Date();if(d.getHours()<4)d.setDate(d.getDate()-1);return'j-'+d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
 
-function today(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function today(){var d=new Date();if(d.getHours()<4)d.setDate(d.getDate()-1);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
 
 function pad(n){return String(n).padStart(2,'0');}
 
-function dtStr(){return new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});}
+function dtStr(){var d=new Date();if(d.getHours()<4)d.setDate(d.getDate()-1);return d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});}
 
 function nowT(){return new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
 
@@ -1651,7 +1651,8 @@ function doReview(days,btnId,extraPrompt,fromDate,toDate){
 
     if(!data){if(btn){btn.textContent='No entries found';setTimeout(function(){btn.textContent='Copy & Open Claude';btn.disabled=false;},2500);}return;}
 
-    var prompt=data+'\n===============\n'+extraPrompt;
+    var aboutCtx=localStorage.getItem('journal_aboutme')||'';
+    var prompt=data+'\n===============\n'+extraPrompt+(aboutCtx?'\n\nContext about me: '+aboutCtx:'');
 
     navigator.clipboard.writeText(prompt).then(function(){
 
@@ -1671,7 +1672,8 @@ function pR(){
 
   var p=document.getElementById('pane');
 
-  p.innerHTML='<p style="font-size:13px;color:#888;margin-bottom:14px;line-height:1.6">Tap a button to copy your entries and open Claude. Paste when Claude opens.</p><div class="review-option"><div class="review-title">Today</div><div class="review-desc">End of day reflection.</div><button class="review-btn" id="rb-today">Copy &amp; Open Claude</button></div><div class="review-option"><div class="review-title">This month <span style="font-size:11px;color:#aaa;font-weight:400">(last 30 days)</span></div><div class="review-desc">Monthly growth arc and recurring themes.</div><button class="review-btn" id="rb-month">Copy &amp; Open Claude</button></div><div class="review-option"><div class="review-title">All time</div><div class="review-desc">Long term patterns and growth over time.</div><button class="review-btn" id="rb-all">Copy &amp; Open Claude</button></div><div class="review-option"><div class="review-title">Specific date or range</div><div class="review-desc">Review any past day or date range.</div><div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"><div style="flex:1;min-width:120px"><div style="font-size:11px;color:#999;margin-bottom:4px;font-weight:600;text-transform:uppercase">From</div><input type="date" id="date-from" class="date-input"></div><div style="flex:1;min-width:120px"><div style="font-size:11px;color:#999;margin-bottom:4px;font-weight:600;text-transform:uppercase">To</div><input type="date" id="date-to" class="date-input"></div></div><button class="review-btn" id="rb-custom">Copy &amp; Open Claude</button><div id="custom-err" style="font-size:12px;color:#b91c1c;margin-top:6px;min-height:14px"></div></div>';
+  var aboutMe=localStorage.getItem('journal_aboutme')||'';
+  p.innerHTML='<div class="card" style="margin-bottom:14px"><div class="lbl">About me <span style="font-size:10px;color:var(--text3);text-transform:none;letter-spacing:0">(added to every review prompt)</span></div><textarea id="about-me-ta" rows="3" placeholder="e.g. SAF regular officer, training officer cadets, recently promoted, gout condition, close to family...">'+aboutMe+'</textarea><button class="btn" id="save-about-me" style="margin-top:8px;padding:8px;font-size:12px">Save</button><div class="ok" id="about-ok" style="opacity:0"></div></div><p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6">Tap a button to copy your entries and open Claude. Paste when Claude opens.</p><div class="review-option"><div class="review-title">Today</div><div class="review-desc">End of day reflection.</div><button class="review-btn" id="rb-today">Copy &amp; Open Claude</button></div><div class="review-option"><div class="review-title">This month <span style="font-size:11px;color:#aaa;font-weight:400">(last 30 days)</span></div><div class="review-desc">Monthly growth arc and recurring themes.</div><button class="review-btn" id="rb-month">Copy &amp; Open Claude</button></div><div class="review-option"><div class="review-title">All time</div><div class="review-desc">Long term patterns and growth over time.</div><button class="review-btn" id="rb-all">Copy &amp; Open Claude</button></div><div class="review-option"><div class="review-title">Specific date or range</div><div class="review-desc">Review any past day or date range.</div><div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"><div style="flex:1;min-width:120px"><div style="font-size:11px;color:#999;margin-bottom:4px;font-weight:600;text-transform:uppercase">From</div><input type="date" id="date-from" class="date-input"></div><div style="flex:1;min-width:120px"><div style="font-size:11px;color:#999;margin-bottom:4px;font-weight:600;text-transform:uppercase">To</div><input type="date" id="date-to" class="date-input"></div></div><button class="review-btn" id="rb-custom">Copy &amp; Open Claude</button><div id="custom-err" style="font-size:12px;color:#b91c1c;margin-top:6px;min-height:14px"></div></div>';
 
   var prompt1='Start your response with "DATE: [today\'s date in DD Mon YYYY format]" on the first line. Then review my journal entries for today. Give me:\n1. Key patterns and themes\n2. Leadership moments\n3. Energy arc\n4. Positive behaviours to reinforce\n5. Honest watch-outs\n6. What to carry forward\nBe direct, specific, honest.';
 
@@ -1679,6 +1681,16 @@ function pR(){
 
   var prompt3='Start your response with "DATE: [today\'s date in DD Mon YYYY format] -- All Time Review" on the first line. Then review all my journal entries. Give me:\n1. Long term patterns\n2. How I have grown\n3. Consistent strengths\n4. Persistent blind spots\n5. What to focus on going forward\nBe direct, specific, honest.';
 
+  setTimeout(function(){
+    var saveAbout=document.getElementById('save-about-me');
+    if(saveAbout){
+      saveAbout.addEventListener('click',function(){
+        var val=document.getElementById('about-me-ta').value;
+        localStorage.setItem('journal_aboutme',val);
+        fl('about-ok');
+      });
+    }
+  },50);
   document.getElementById('rb-today').addEventListener('click',function(){doReview(1,'rb-today',prompt1);});
 
   document.getElementById('rb-month').addEventListener('click',function(){doReview(30,'rb-month',prompt2);});
